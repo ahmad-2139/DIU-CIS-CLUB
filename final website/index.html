@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS Club - Daffodil International University</title>
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        diu: {
+                            primary: '#006a4e',
+                            secondary: '#f7941d',
+                            dark: '#1b1b1b',
+                            light: '#f4f4f4',
+                            accent: '#e6f0ed'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="flex flex-col min-h-screen text-gray-800">
+
+    <!-- Top Bar -->
+    <div class="top-bar py-2 px-4 hidden md:block">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex space-x-6">
+                <span><i class="fas fa-phone-alt mr-2"></i>+88 09617901212</span>
+                <span><i class="fas fa-envelope mr-2"></i>cisclub@diu.edu.bd</span>
+            </div>
+            <div class="flex items-center space-x-4 font-medium" id="top-bar-actions">
+                <a href="#" class="hover:text-diu-secondary transition">Student Portal</a>
+                <span class="border-l border-white/30 h-4"></span>
+                <a href="#" class="hover:text-diu-secondary transition">Alumni</a>
+                <span class="border-l border-white/30 h-4"></span>
+                <a href="#" class="hover:text-diu-secondary transition">Library</a>
+                <span class="border-l border-white/30 h-4"></span>
+                
+                <div id="logged-out-view">
+                    <button onclick="navigateToAccount()" class="bg-white text-diu-primary px-3 py-1 rounded text-xs font-bold uppercase hover:bg-diu-secondary hover:text-white transition shadow">
+                        <i class="fas fa-user-circle mr-1"></i> Login / Sign Up
+                    </button>
+                </div>
+                
+                <div id="logged-in-view" class="hidden flex items-center gap-3">
+                    <span class="text-xs">Welcome, <span id="nav-user-name" class="font-bold text-diu-secondary">User</span></span>
+                    <button onclick="navigateTo('profile')" class="text-xs hover:underline"><i class="fas fa-id-card"></i> Profile</button>
+                    <button onclick="logout()" class="text-xs bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-white">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo Area -->
+                <div class="flex items-center cursor-pointer" onclick="navigateTo('home')">
+                    <div class="flex items-center gap-4">
+                        <img src="cis club logo.jpg" alt="CIS Club Logo" class="h-14 w-auto object-contain">
+                        <div class="leading-tight">
+                            <h1 class="text-xl font-bold text-diu-primary uppercase tracking-wide">Daffodil</h1>
+                            <span class="text-xs font-semibold text-gray-500 block">International University</span>
+                            <span class="text-sm font-bold text-diu-secondary block">CIS Club</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden lg:flex space-x-8">
+                    <a onclick="navigateTo('home')" class="nav-link active">Home</a>
+                    <a onclick="navigateTo('about')" class="nav-link">About</a>
+                    <a onclick="navigateTo('events')" class="nav-link">Events</a>
+                    <a onclick="navigateTo('members')" class="nav-link">Membership</a>
+                    <a onclick="navigateTo('resources')" class="nav-link">Resources</a>
+                    <a onclick="navigateTo('gallery')" class="nav-link">Gallery</a>
+                    <a onclick="navigateTo('contact')" class="nav-link">Contact</a>
+                    <a onclick="navigateToAccount()" class="nav-link">Account</a>
+                </nav>
+
+                <!-- Search & Mobile Toggle -->
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-diu-primary"><i class="fas fa-search text-lg"></i></button>
+                    <button id="mobile-menu-btn" class="lg:hidden text-2xl text-diu-primary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-gray-100">
+            <div class="flex flex-col px-4 py-4 space-y-3">
+                <div id="mobile-auth-btn">
+                    <a href="#" onclick="navigateToAccount(); toggleMobileMenu()" class="block text-diu-primary font-bold"><i class="fas fa-sign-in-alt mr-2"></i>Login / Sign Up</a>
+                </div>
+                <a href="#" onclick="navigateTo('home'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Home</a>
+                <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">About</a>
+                <a href="#" onclick="navigateTo('events'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Events</a>
+                <a href="#" onclick="navigateTo('members'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Membership</a>
+                <a href="#" onclick="navigateTo('resources'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Resources</a>
+                <a href="#" onclick="navigateTo('gallery'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Gallery</a>
+                <a href="#" onclick="navigateTo('contact'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Contact</a>
+                <div id="mobile-logout-btn" class="hidden border-t pt-2 mt-2">
+                    <a href="#" onclick="navigateTo('profile'); toggleMobileMenu()" class="block text-diu-secondary font-bold"><i class="fas fa-id-card mr-2"></i>My Profile</a>
+                    <a href="#" onclick="logout(); toggleMobileMenu()" class="block text-red-600 font-bold mt-2"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="flex-grow">
+        
+        <!-- AUTH PAGE -->
+        <section id="auth" class="page-section container mx-auto px-4 py-16 hidden">
+            <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+                <div class="flex border-b bg-gray-50">
+                    <div id="tab-login" class="w-1/2 py-4 text-center font-bold text-lg auth-tab active" onclick="switchAuthTab('login')">
+                        Login
+                    </div>
+                    <div id="tab-signup" class="w-1/2 py-4 text-center font-bold text-lg auth-tab" onclick="switchAuthTab('signup')">
+                        Create Account
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    
+                    <div id="login-form-container">
+                        <h2 class="text-2xl font-bold text-diu-primary mb-6 text-center">Member Login</h2>
+                        <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+                                    <input type="email" id="loginEmail" class="form-input pl-10" placeholder="student@diu.edu.bd" required>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+                                    <input type="password" id="loginPass" class="form-input pl-10" placeholder="********" required oninput="checkPasswordStrength(this.value, 'login')">
+                                </div>
+                                <div id="login-password-strength" class="password-strength-meter"></div>
+                            </div>
+                            <div class="mb-4">
+                                <a href="#" onclick="showPasswordReset()" class="text-sm text-diu-secondary hover:underline">Forgot Password?</a>
+                            </div>
+                            <button type="submit" id="loginBtn" class="w-full bg-diu-primary hover:bg-green-800 text-white font-bold py-3 rounded transition shadow-md">
+                                <span id="loginBtnText">LOGIN</span>
+                                <i id="loginSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                            </button>
+                            <div id="login-error" class="text-red-500 text-center text-sm mt-3 hidden"></div>
+                        </form>
+                    </div>
+
+                    <div id="signup-form-container" class="hidden">
+                        <h2 class="text-2xl font-bold text-diu-primary mb-2 text-center">Join CIS Club</h2>
+                        <p class="text-center text-gray-500 mb-6 text-sm">Select your category to proceed</p>
+                        
+                        <form id="signupForm" onsubmit="handleSignup(event)" novalidate>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="userType" value="cis" class="user-type-radio hidden" checked onchange="updateSignupFields()">
+                                    <div class="border border-gray-300 rounded p-3 text-center text-sm font-semibold transition hover:bg-gray-50">
+                                        <i class="fas fa-laptop-code block text-lg mb-1"></i> From CIS Dept
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="userType" value="diu_other" class="user-type-radio hidden" onchange="updateSignupFields()">
+                                    <div class="border border-gray-300 rounded p-3 text-center text-sm font-semibold transition hover:bg-gray-50">
+                                        <i class="fas fa-university block text-lg mb-1"></i> Other DIU Dept
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="userType" value="outside" class="user-type-radio hidden" onchange="updateSignupFields()">
+                                    <div class="border border-gray-300 rounded p-3 text-center text-sm font-semibold transition hover:bg-gray-50">
+                                        <i class="fas fa-globe block text-lg mb-1"></i> Outside DIU
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="regName" class="form-input" placeholder="Enter full name" required>
+                                </div>
+
+                                <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Dynamic fields will be inserted here -->
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                                        <input type="email" id="regEmail" class="form-input" placeholder="email@example.com" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+                                        <input type="text" id="regPhone" class="form-input" placeholder="+8801...">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
+                                        <input type="password" id="regPass" class="form-input" placeholder="Create password" required oninput="checkPasswordStrength(this.value, 'signup')">
+                                        <div id="signup-password-strength" class="password-strength-meter"></div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Confirm Password <span class="text-red-500">*</span></label>
+                                        <input type="password" id="regConfirmPass" class="form-input" placeholder="Repeat password" required>
+                                        <p id="pass-error" class="error-message">Passwords do not match</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="termsAgreement" class="mr-2" required>
+                                    <span class="text-sm text-gray-600">I agree to the <a href="#" class="text-diu-primary hover:underline">Terms & Conditions</a> and <a href="#" class="text-diu-primary hover:underline">Privacy Policy</a></span>
+                                </label>
+                            </div>
+
+                            <button type="submit" id="signupBtn" class="w-full mt-8 bg-diu-secondary hover:bg-orange-600 text-white font-bold py-3 rounded transition shadow-md">
+                                <span id="signupBtnText">REGISTER NOW</span>
+                                <i id="signupSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- USER PROFILE PAGE -->
+        <section id="profile" class="page-section hidden container mx-auto px-4 py-12">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 section-title">My Profile</h2>
+                        <p class="text-gray-600 mt-2">Manage your account and membership details</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="editProfile()" class="bg-diu-primary hover:bg-green-800 text-white px-4 py-2 rounded text-sm font-medium">
+                            <i class="fas fa-edit mr-2"></i> Edit Profile
+                        </button>
+                        <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Profile Loading State -->
+                <div id="profile-loading" class="text-center py-12">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-gray-600">Loading profile information...</p>
+                </div>
+                
+                <!-- Profile Content -->
+                <div id="profile-content" class="hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        <!-- Left Column: User Info Card -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-diu-primary text-white rounded-xl p-6 text-center shadow-lg">
+                                <div class="w-32 h-32 rounded-full bg-white/20 mx-auto mb-4 flex items-center justify-center border-4 border-white">
+                                    <i class="fas fa-user text-5xl"></i>
+                                </div>
+                                <h3 id="profile-display-name" class="text-xl font-bold mb-1">User Name</h3>
+                                <p id="profile-user-type" class="text-white/80 text-sm mb-2">Member</p>
+                                <div class="mt-4">
+                                    <span id="profile-status" class="status-badge status-active">Active</span>
+                                </div>
+                                
+                                <div class="mt-8 pt-6 border-t border-white/30">
+                                    <div class="text-left space-y-2">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-envelope text-sm w-5"></i>
+                                            <span class="text-xs ml-2" id="profile-email-short">email@example.com</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-phone text-sm w-5"></i>
+                                            <span class="text-xs ml-2" id="profile-phone-short">+880...</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-calendar text-sm w-5"></i>
+                                            <span class="text-xs ml-2" id="profile-join-date-short">Jan 2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Stats -->
+                            <div class="mt-6 space-y-4">
+                                <div class="profile-stat-card">
+                                    <h4 class="font-bold text-gray-800 mb-2">Membership ID</h4>
+                                    <p id="profile-membership-id" class="text-2xl font-bold text-diu-primary font-mono">CIS-0001</p>
+                                </div>
+                                
+                                <div class="profile-stat-card">
+                                    <h4 class="font-bold text-gray-800 mb-2">Role</h4>
+                                    <p id="profile-role" class="text-lg text-diu-primary">Member</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Details -->
+                        <div class="lg:col-span-3 space-y-6">
+                            <!-- Personal Information Card -->
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                                <h3 class="text-xl font-bold text-diu-primary mb-6 flex items-center">
+                                    <i class="fas fa-user-circle mr-3"></i> Personal Information
+                                </h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-500 mb-1">Full Name</label>
+                                        <p id="profile-name" class="text-gray-800 font-medium text-lg">Loading...</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-500 mb-1">Email Address</label>
+                                        <p id="profile-email" class="text-gray-800 font-medium">Loading...</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-500 mb-1">Phone Number</label>
+                                        <p id="profile-phone" class="text-gray-800 font-medium">Loading...</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-500 mb-1">Member Since</label>
+                                        <p id="profile-join-date" class="text-gray-800 font-medium">Loading...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Membership Details Card -->
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                                <h3 class="text-xl font-bold text-diu-primary mb-6 flex items-center">
+                                    <i class="fas fa-id-card mr-3"></i> Membership Details
+                                </h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-500 mb-1">Member Type</label>
+                                        <p id="profile-member-type" class="text-gray-800 font-medium text-lg">Loading...</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-500 mb-1">Account Status</label>
+                                        <div id="profile-status-badge" class="inline-block">
+                                            <span class="status-badge status-active">Active</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-500 mb-1">Email Verified</label>
+                                        <div id="email-verified-badge">
+                                            <span class="status-badge status-pending">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Educational Details Card -->
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                                <h3 class="text-xl font-bold text-diu-primary mb-6 flex items-center">
+                                    <i class="fas fa-graduation-cap mr-3"></i> Educational Details
+                                </h3>
+                                
+                                <div id="profile-education" class="space-y-4">
+                                    <!-- Dynamic content based on user type -->
+                                </div>
+                            </div>
+                            
+                            <!-- Activity Stats -->
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                                <h3 class="text-xl font-bold text-diu-primary mb-6 flex items-center">
+                                    <i class="fas fa-chart-line mr-3"></i> Your Activity
+                                </h3>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                        <div class="text-3xl font-bold text-diu-primary mb-1" id="profile-events-count">0</div>
+                                        <div class="text-sm text-gray-600">Events Attended</div>
+                                    </div>
+                                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                        <div class="text-3xl font-bold text-diu-primary mb-1" id="profile-projects-count">0</div>
+                                        <div class="text-sm text-gray-600">Projects</div>
+                                    </div>
+                                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                        <div class="text-3xl font-bold text-diu-primary mb-1" id="profile-resources-count">0</div>
+                                        <div class="text-sm text-gray-600">Resources Shared</div>
+                                    </div>
+                                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                                        <div class="text-3xl font-bold text-diu-primary mb-1" id="profile-certificates-count">0</div>
+                                        <div class="text-sm text-gray-600">Certificates</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+                                <h4 class="font-bold text-gray-800 mb-4">Quick Actions</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <a href="#" class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:border-diu-primary transition">
+                                        <i class="fas fa-calendar-alt text-diu-primary mr-3"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">My Event Registrations</div>
+                                            <div class="text-xs text-gray-500">View upcoming events</div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:border-diu-primary transition">
+                                        <i class="fas fa-certificate text-diu-primary mr-3"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">My Certificates</div>
+                                            <div class="text-xs text-gray-500">Download certificates</div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:border-diu-primary transition">
+                                        <i class="fas fa-download text-diu-primary mr-3"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Downloaded Resources</div>
+                                            <div class="text-xs text-gray-500">View history</div>
+                                        </div>
+                                    </a>
+                                    <a href="#" onclick="navigateTo('resources')" class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:border-diu-primary transition">
+                                        <i class="fas fa-upload text-diu-primary mr-3"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Share Resources</div>
+                                            <div class="text-xs text-gray-500">Contribute to community</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOME PAGE -->
+        <section id="home" class="page-section active">
+            <!-- Hero Slider (5 slides) -->
+            <div class="slider-container relative">
+                <div class="slide active" style="background-image: url('crousal1.jpg');">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-4xl md:text-6xl font-bold mb-4 uppercase">Empowering Tech Leaders</h2>
+                        <p class="text-lg md:text-xl mb-8 max-w-2xl">Join the Department of Computing and Information System Club to bridge the gap between academia and industry.</p>
+                        <div class="flex gap-4 flex-wrap">
+                            <button onclick="navigateTo('members')" class="bg-diu-secondary hover:bg-orange-600 text-white px-8 py-3 rounded font-bold uppercase text-sm transition">Join Club</button>
+                            <button onclick="navigateTo('about')" class="border-2 border-white hover:bg-white hover:text-diu-primary text-white px-8 py-3 rounded font-bold uppercase text-sm transition">Learn More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide" style="background-image: url('crousal2.jpg');">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-4xl md:text-6xl font-bold mb-4 uppercase">Fall 2025 Events</h2>
+                        <p class="text-lg md:text-xl mb-8 max-w-2xl">Workshops, Hackathons, and Seminars designed to sharpen your skills.</p>
+                        <button onclick="navigateTo('events')" class="bg-diu-secondary hover:bg-orange-600 text-white px-8 py-3 rounded font-bold uppercase text-sm transition w-fit">View Calendar</button>
+                    </div>
+                </div>
+
+                <div class="slide" style="background-image: url('crousal3.jpg');">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-4xl md:text-6xl font-bold mb-4 uppercase">Hands-on Learning</h2>
+                        <p class="text-lg md:text-xl mb-8 max-w-2xl">Mastering the latest technologies through practical lab sessions, coding bootcamps, and technical training.</p>
+                        <button onclick="navigateTo('activities')" class="bg-diu-secondary hover:bg-orange-600 text-white px-8 py-3 rounded font-bold uppercase text-sm transition w-fit">Explore Activities</button>
+                    </div>
+                </div>
+
+                <div class="slide" style="background-image: url('crousal4.jpg');">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-4xl md:text-6xl font-bold mb-4 uppercase">Industry Connect</h2>
+                        <p class="text-lg md:text-xl mb-8 max-w-2xl">Bridging the gap between classroom theory and corporate reality with exclusive industry visits and networking.</p>
+                        <button onclick="navigateTo('gallery')" class="bg-diu-secondary hover:bg-orange-600 text-white px-8 py-3 rounded font-bold uppercase text-sm transition w-fit">View Gallery</button>
+                    </div>
+                </div>
+
+                <div class="slide" style="background-image: url('crousal5.jpg');">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-4xl md:text-6xl font-bold mb-4 uppercase">Celebrating Excellence</h2>
+                        <p class="text-lg md:text-xl mb-8 max-w-2xl">Our members shining bright and securing top positions in national tech competitions and summits.</p>
+                        <button onclick="navigateTo('achievements')" class="bg-diu-secondary hover:bg-orange-600 text-white px-8 py-3 rounded font-bold uppercase text-sm transition w-fit">Our Achievements</button>
+                    </div>
+                </div>
+
+                <!-- Slider Navigation -->
+                <div class="slider-nav">
+                    <div class="slider-dot active" data-index="0"></div>
+                    <div class="slider-dot" data-index="1"></div>
+                    <div class="slider-dot" data-index="2"></div>
+                    <div class="slider-dot" data-index="3"></div>
+                    <div class="slider-dot" data-index="4"></div>
+                </div>
+
+                <!-- Slider Arrows -->
+                <div class="slider-arrow prev" onclick="prevSlide()">
+                    <i class="fas fa-chevron-left"></i>
+                </div>
+                <div class="slider-arrow next" onclick="nextSlide()">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- News Ticker -->
+            <div class="news-ticker-container py-3 flex items-center">
+                <div class="bg-diu-primary text-white px-6 py-1 font-bold z-10 text-sm uppercase">Latest Notice</div>
+                <div class="news-ticker-content text-gray-700 text-sm font-medium">
+                    <span class="mx-8"><i class="fas fa-bullhorn text-diu-secondary mr-2"></i> Registration for Fall 2025 Membership is now open!</span>
+                    <span class="mx-8"><i class="fas fa-calendar-alt text-diu-secondary mr-2"></i> Intro to React.js Workshop scheduled for Oct 15th.</span>
+                    <span class="mx-8"><i class="fas fa-trophy text-diu-secondary mr-2"></i> Congratulations to our Hackathon Winners!</span>
+                </div>
+            </div>
+
+            <!-- Home Grid: About & Tabs -->
+            <div class="container mx-auto px-4 py-16">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <!-- Left: Welcome/About Summary -->
+                    <div class="lg:col-span-2">
+                        <h3 class="text-3xl font-bold text-gray-800 section-title">Welcome to CIS Club</h3>
+                        <p class="text-gray-600 leading-relaxed mb-6">
+                            The CIS Club is the heartbeat of the Computing and Information System department at Daffodil International University. Since our inception, we have focused on one goal: <strong>Innovation through Collaboration.</strong>
+                        </p>
+                        <p class="text-gray-600 leading-relaxed mb-8">
+                            We provide a platform for students to explore emerging technologies, participate in competitive programming, and engage in community services.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex items-start">
+                                <div class="bg-gray-100 p-3 rounded text-diu-primary mr-4"><i class="fas fa-laptop-code text-2xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-1">Skill Development</h4>
+                                    <p class="text-sm text-gray-500">Regular workshops on Web, App, and AI.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-gray-100 p-3 rounded text-diu-primary mr-4"><i class="fas fa-users text-2xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-1">Networking</h4>
+                                    <p class="text-sm text-gray-500">Connect with alumni and industry leaders.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Quick Links / Notice Board Style -->
+                    <div class="bg-white border border-gray-200 shadow-sm p-6">
+                        <h4 class="text-xl font-bold text-diu-primary mb-4 border-b pb-2">Notices & Events</h4>
+                        <ul class="space-y-4">
+                            <li class="flex border-b border-gray-100 pb-3">
+                                <div class="bg-gray-100 text-center px-3 py-1 rounded mr-3 h-fit min-w-[60px]">
+                                    <span class="block text-xs font-bold text-gray-500">Dec</span>
+                                    <span class="block text-xl font-bold text-diu-primary">5-6</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="font-semibold text-gray-800 hover:text-diu-secondary text-sm block">National Language Fest 2025</a>
+                                    <span class="text-xs text-gray-500"><i class="far fa-clock"></i> Upcoming..</span>
+                                </div>
+                            </li>
+                            <li class="flex border-b border-gray-100 pb-3">
+                                <div class="bg-gray-100 text-center px-3 py-1 rounded mr-3 h-fit min-w-[60px]">
+                                    <span class="block text-xs font-bold text-gray-500">Nov</span>
+                                    <span class="block text-xl font-bold text-diu-primary">25</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="font-semibold text-gray-800 hover:text-diu-secondary text-sm block">AI Fest 2025</a>
+                                    <span class="text-xs text-gray-500"><i class="far fa-clock"></i> 11:00 AM - AI Lab</span>
+                                </div>
+                            </li>
+                            <li class="flex">
+                                <div class="bg-gray-100 text-center px-3 py-1 rounded mr-3 h-fit min-w=[60px]">
+                                    <span class="block text-xs font-bold text-gray-500">Feb</span>
+                                    <span class="block text-xl font-bold text-diu-primary">11-13</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="font-semibold text-gray-800 hover:text-diu-secondary text-sm block">CIS Futsal Tournament 2025</a>
+                                    <span class="text-xs text-gray-500"><i class="far fa-clock"></i> 10:00 AM - Turf Ground</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <button onclick="navigateTo('events')" class="w-full mt-6 bg-gray-800 text-white py-2 text-sm font-bold uppercase hover:bg-diu-primary transition">View All Events</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OUR IMPACT  -->
+            <section class="impact-section">
+                <div class="container mx-auto px-4">
+                    <h2 class="impact-title">Our Impact</h2>
+                    <p class="impact-subtitle">Transforming students into tech leaders through community and innovation</p>
+
+                    <div class="impact-grid">
+                        <div class="impact-card">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-user-group"></i>
+                            </div>
+                            <span class="counter-number" data-target="500">500+</span>
+                            <span class="counter-label">Active Members</span>
+                        </div>
+
+                        <div class="impact-card">
+                            <div class="icon-box">
+                                <i class="fa-regular fa-calendar"></i>
+                            </div>
+                            <span class="counter-number" data-target="100">100+</span>
+                            <span class="counter-label">Events Hosted</span>
+                        </div>
+
+                        <div class="impact-card">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="counter-number" data-target="100">100+</span>
+                            <span class="counter-label">Projects Completed</span>
+                        </div>
+
+                        <div class="impact-card">
+                            <div class="icon-box">
+                                <i class="fa-regular fa-building"></i>
+                            </div>
+                            <span class="counter-number" data-target="30">30+</span>
+                            <span class="counter-label">Industry Partners</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!--WHY JOIN CIS CLUB  -->
+            <section class="mission-section">
+                <div class="circle-decor"></div>
+
+                <div class="container mx-auto px-4">
+                    <div class="mission-content">
+                        
+                        <div class="mission-text">
+                            <div class="mission-tag">OUR MISSION</div>
+                            <h2 class="mission-heading">Why You Should Join <span class="highlight-text">CIS Club?</span></h2>
+                            <p class="mission-desc">
+                                The CIS Club bridges academic learning with real-world applications, offering unparalleled opportunities for growth, networking, and skill development. Join a community of innovators who are shaping the future of technology.
+                            </p>
+                            <button onclick="navigateTo('members')" class="btn-primary">Become a Member <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+
+                        <div class="features-grid">
+                            
+                            <div class="feature-item">
+                                <div class="feature-icon-gradient"></div>
+                                <h3 class="feature-title">Technical Workshops</h3>
+                                <p class="feature-text">Hands-on learning sessions covering the latest technologies, programming languages, and industry best practices.</p>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon-gradient" style="transform: rotate(4deg);"></div>
+                                <h3 class="feature-title">Networking Events</h3>
+                                <p class="feature-text">Connect with peers, alumni, and industry professionals to build lasting relationships and expand your network.</p>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon-gradient"></div>
+                                <h3 class="feature-title">Career Support</h3>
+                                <p class="feature-text">Get guidance on internships, job opportunities, resume reviews, and interview preparation from experienced mentors.</p>
+                            </div>
+
+                            <div class="feature-item">
+                                <div class="feature-icon-gradient"></div>
+                                <h3 class="feature-title">Project Collaboration</h3>
+                                <p class="feature-text">Work on real-world projects with fellow members, building your portfolio while solving meaningful problems.</p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AWARD SHOWCASE SECTION (from third code) -->
+            <section class="awards-section">
+                <div class="award-header">
+                    <div class="container mx-auto px-4">
+                        <h1 class="award-title">DIU CIS Club <span class="text-diu-secondary">Hall of Fame</span></h1>
+                        <p class="award-subtitle">
+                            Celebrating innovation, leadership, and technical excellence within our community.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="container mx-auto px-4 py-12 space-y-20">
+
+                    <section class="grid md:grid-cols-2 gap-10 items-center">
+                        <div class="order-2 md:order-1 space-y-6">
+                            <span class="award-badge badge-community">
+                                Community Leadership
+                            </span>
+                            <h2 class="text-3xl font-bold text-gray-900">3rd Place: Summer 2025 Club Enrollment Campaign</h2>
+                            <p class="text-lg text-gray-700 leading-relaxed">
+                                The CIS Club demonstrated exceptional organizational prowess and community outreach during the Summer 2025 enrollment drive. Through strategic planning and enthusiastic engagement, the team secured the 3rd position overall, significantly expanding our member base and fostering a vibrant tech community on campus.
+                            </p>
+                        </div>
+                        <div class="order-1 md:order-2">
+                            <div class="image-wrapper h-64 md:h-80">
+                                <img src="award1.jpg" alt="Club Enrollment Campaign Award Ceremony">
+                                <div class="green-overlay"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="grid md:grid-cols-2 gap-10 items-center">
+                         <div class="order-1">
+                            <div class="image-wrapper h-64 md:h-80">
+                                <img src="award2.jpg" alt="AI Project Competition Award">
+                                <div class="green-overlay"></div>
+                            </div>
+                        </div>
+                        <div class="order-2 space-y-6">
+                             <span class="award-badge badge-technical">
+                                Technical Innovation
+                            </span>
+                            <h2 class="text-3xl font-bold text-gray-900">2nd Runner-Up: 4th Data Science Summit</h2>
+                            <p class="text-lg text-gray-700 leading-relaxed">
+                                Our talented team showcased their technical expertise in artificial intelligence at the prestigious 4th Data Science Summit AI Project Competition. Their innovative project secured the 2nd Runner-Up position among stiff competition, highlighting the department's strength in cutting-edge technology and problem-solving.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section class="grid md:grid-cols-2 gap-10 items-center">
+                        <div class="order-2 md:order-1 space-y-6">
+                             <span class="award-badge badge-innovation">
+                                Individual Brilliance & IoT
+                            </span>
+                            <h2 class="text-3xl font-bold text-gray-900">Innovation in Public Safety: Metro Rail Monitoring System</h2>
+                            <p class="text-lg text-gray-700 leading-relaxed">
+                                CIS student Iran Sardar has developed a groundbreaking 'Metro Rail Bearing Pad Safety Monitoring System'. Utilizing advanced IoT sensors and robotics, this proactive solution instantly detects structural deviations or vibrations in bearing pads. The system triggers real-time alarms and alerts control rooms to prevent potential accidents, significantly enhancing national infrastructure safety for passengers.
+                            </p>
+                        </div>
+                        <div class="order-1 md:order-2">
+                            <div class="image-wrapper h-64 md:h-96">
+                                <img src="award3.jpg" alt="Iran Sardar with Metro Rail Safety Project">
+                                <div class="green-overlay"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+            </section>
+
+            <!-- "Life at CIS" Gallery Preview -->
+            <div class="bg-gray-100 py-16">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-10">
+                        <h3 class="text-3xl font-bold text-gray-800 section-title">Life at CIS Club</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="life1.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Hackathons</div>
+                        </div>
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="life2.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Team Work</div>
+                        </div>
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="life3.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Seminars</div>
+                        </div>
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="life4.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Celebrations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT PAGE-->
+        <section id="about" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">About the Club</h2>
+            
+            <div class="flex flex-col md:flex-row gap-8 mb-12">
+                <div class="md:w-1/2">
+                    <img src="about.jpeg" alt="About CIS" class="rounded shadow-md w-full">
+                </div>
+                <div class="md:w-1/2 space-y-4">
+                    <h3 class="text-2xl font-bold text-diu-primary">Our Mission</h3>
+                    <p class="text-gray-600">The mission of the CIS Club is to create a nurturing environment where students can bridge the gap between theoretical knowledge and practical application.</p>
+                    
+                    <h3 class="text-2xl font-bold text-diu-primary pt-4">Our History</h3>
+                    <p class="text-gray-600">Established in Fall 2015, the CIS Club started as a small study group. Today, it is one of the most vibrant clubs at DIU, organizing national-level hackathons and tech fests.</p>
+                </div>
+            </div>
+
+            <!-- COMMITTEE SECTION  -->
+            <div class="mt-16">
+                <div class="bg-gray-900 text-white py-12 relative overflow-hidden mb-12">
+                    <div class="absolute inset-0 bg-diu-primary opacity-90"></div>
+                    <div class="container mx-auto px-4 text-center relative z-10">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">Executive Committee</h2>
+                        <p class="text-xl text-gray-200">Meet the leaders driving our vision forward</p>
+                    </div>
+                </div>
+
+                <div class="container mx-auto space-y-20">
+                    
+                    <!-- Helper for Image Fallback -->
+                    <script>
+                        function imgError(image) {
+                            image.onerror = "";
+                            image.src = "https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=User&size=200";
+                        }
+                    </script>
+
+                    <!-- LEVEL I: Advisory and Convener Panel -->
+                    <div class="committee-group">
+                        <div class="flex items-center justify-center mb-10">
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                            <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mx-4 text-center">Advisory & Convener Panel</h3>
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        </div>
+                        
+                        <div class="flex flex-wrap justify-center gap-8">
+                            <!-- Card 1 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                                <div class="p-4 flex justify-center bg-gray-50">
+                                    <img src="1.jpg" onerror="imgError(this)" alt="Md. Sarwar Hossain Mollah" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                                </div>
+                                <div class="p-5 text-center">
+                                    <h4 class="text-lg font-bold text-diu-dark mb-1">Md. Sarwar Hossain Mollah</h4>
+                                    <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Advisor</p>
+                                </div>
+                            </div>
+
+                            <!-- Card 2 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                                <div class="p-4 flex justify-center bg-gray-50">
+                                    <img src="2.jpg" onerror="imgError(this)" alt="Md. Mehedi Hassan" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                                </div>
+                                <div class="p-5 text-center">
+                                    <h4 class="text-lg font-bold text-diu-dark mb-1">Md. Mehedi Hassan</h4>
+                                    <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Advisor</p>
+                                </div>
+                            </div>
+
+                            <!-- Card 3 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                                <div class="p-4 flex justify-center bg-gray-50">
+                                    <img src="3.jpg" onerror="imgError(this)" alt="Mr. Israfil" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                                </div>
+                                <div class="p-5 text-center">
+                                    <h4 class="text-lg font-bold text-diu-dark mb-1">Mr. Israfil</h4>
+                                    <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Convener</p>
+                                </div>
+                            </div>
+
+                            <!-- Card 4 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                                <div class="p-4 flex justify-center bg-gray-50">
+                                    <img src="4.jpg" onerror="imgError(this)" alt="Tamanna Akter" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                                </div>
+                                <div class="p-5 text-center">
+                                    <h4 class="text-lg font-bold text-diu-dark mb-1">Tamanna Akter</h4>
+                                    <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Co-Convener</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LEVEL II: Executive Leadership -->
+                    <div class="committee-group">
+                        <div class="flex items-center justify-center mb-10">
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                            <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mx-4 text-center">Executive Leadership</h3>
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-8">
+                            <!-- President -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-80 border-t-4 border-diu-primary relative transform scale-105 z-10">
+                                 <div class="absolute top-0 right-0 bg-diu-primary text-white text-xs px-2 py-1 rounded-bl-lg font-bold">LEADER</div>
+                                <div class="p-4 flex justify-center bg-gray-50">
+                                    <img src="5.jpg" onerror="imgError(this)" alt="Mabia Akonda Jemi" class="w-full h-72 object-cover rounded-lg shadow-sm border border-gray-200">
+                                </div>
+                                <div class="p-6 text-center">
+                                    <h4 class="text-xl font-bold text-diu-dark mb-1">Mabia Akonda Jemi</h4>
+                                    <p class="text-diu-primary font-bold text-base uppercase tracking-wide">President</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-8 mt-8">
+                            <!-- VP 1 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                                <div class="p-4 flex justify-center bg-gray-50">
+                                    <img src="6.jpg" onerror="imgError(this)" alt="Ariful Haque Piash" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                                </div>
+                                <div class="p-5 text-center">
+                                    <h4 class="text-lg font-bold text-diu-dark mb-1">Ariful Haque Piash</h4>
+                                    <p class="text-gray-600 font-medium text-sm uppercase tracking-wide">Vice-President</p>
+                                </div>
+                            </div>
+
+                            <!-- VP 2 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                                <div class="p-4 flex justify-center bg-gray-50">
+                                    <img src="7.jpg" onerror="imgError(this)" alt="Shinthiah Islam Ritu" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                                </div>
+                                <div class="p-5 text-center">
+                                    <h4 class="text-lg font-bold text-diu-dark mb-1">Shinthiah Islam Ritu</h4>
+                                    <p class="text-gray-600 font-medium text-sm uppercase tracking-wide">Vice-President</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LEVEL III: Secretarial / Core Management -->
+                    <div class="committee-group">
+                        <div class="flex items-center justify-center mb-10">
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                            <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mx-4 text-center">Core Management</h3>
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-6">
+                            <!-- General Secretary -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="8.jpg" onerror="imgError(this)" alt="A.F.M. Shah Arafin Atiq" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                                </div>
+                                <div class="p-4 text-center">
+                                    <h4 class="text-md font-bold text-diu-dark mb-1">A.F.M. Shah Arafin Atiq</h4>
+                                    <p class="text-gray-500 text-xs font-bold uppercase">General Secretary</p>
+                                </div>
+                            </div>
+
+                             <!-- Treasurer -->
+                             <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="9.jpg" onerror="imgError(this)" alt="Sanjana Noor Disha" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                                </div>
+                                <div class="p-4 text-center">
+                                    <h4 class="text-md font-bold text-diu-dark mb-1">Sanjana Noor Disha</h4>
+                                    <p class="text-gray-500 text-xs font-bold uppercase">Treasurer</p>
+                                </div>
+                            </div>
+
+                            <!-- Joint Secretary 1 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="10.jpg" onerror="imgError(this)" alt="Samiul Hauque Ann Nahian" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                                </div>
+                                <div class="p-4 text-center">
+                                    <h4 class="text-md font-bold text-diu-dark mb-1">Samiul Hauque Ann Nahian</h4>
+                                    <p class="text-gray-500 text-xs font-bold uppercase">Joint Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Joint Secretary 2 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="11.jpg" onerror="imgError(this)" alt="Md. Samiul Islam" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                                </div>
+                                <div class="p-4 text-center">
+                                    <h4 class="text-md font-bold text-diu-dark mb-1">Md. Samiul Islam</h4>
+                                    <p class="text-gray-500 text-xs font-bold uppercase">Joint Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Joint Secretary 3 -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="12.jpg" onerror="imgError(this)" alt="Shumaia Jaman Shimu" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                                </div>
+                                <div class="p-4 text-center">
+                                    <h4 class="text-md font-bold text-diu-dark mb-1">Shumaia Jaman Shimu</h4>
+                                    <p class="text-gray-500 text-xs font-bold uppercase">Joint Secretary</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LEVEL IV: Organizing and Execution -->
+                    <div class="committee-group">
+                        <div class="flex items-center justify-center mb-10">
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-700 mx-4 text-center">Organizing & Execution</h3>
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-6">
+                            <!-- Org Sec -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="13.jpg" onerror="imgError(this)" alt="Jobaied Chowdhury Akash" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Jobaied Chowdhury Akash</h4>
+                                    <p class="text-diu-primary text-xs mt-1">Organizing Secretary</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Deputy Org Secs -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="14.jpg" onerror="imgError(this)" alt="Nusrat Jahan Jitu" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Nusrat Jahan Jitu</h4>
+                                    <p class="text-gray-500 text-xs mt-1">Deputy Organizing Sec.</p>
+                                </div>
+                            </div>
+
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="15.jpg" onerror="imgError(this)" alt="MD. Mahid Alam Marin" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">MD. Mahid Alam Marin</h4>
+                                    <p class="text-gray-500 text-xs mt-1">Deputy Organizing Sec.</p>
+                                </div>
+                            </div>
+
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                                <div class="p-3 flex justify-center bg-gray-50">
+                                    <img src="16.jpg" onerror="imgError(this)" alt="Indrojit Sarkar Pallab" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Indrojit Sarkar Pallab</h4>
+                                    <p class="text-gray-500 text-xs mt-1">Deputy Organizing Sec.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LEVEL V: Specialized Secretaries -->
+                    <div class="committee-group">
+                        <div class="flex items-center justify-center mb-10">
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-700 mx-4 text-center">Specialized Departments</h3>
+                            <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-6">
+                            <!-- Media -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="17.jpg" onerror="imgError(this)" alt="Md. Mushfiqul Islam Ruhit" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Md. Mushfiqul Islam Ruhit</h4>
+                                    <p class="text-diu-secondary text-xs font-semibold mt-1">Media Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Press -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="18.jpg" onerror="imgError(this)" alt="Md. Jakaria Hossin Fahim" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Md. Jakaria Hossin Fahim</h4>
+                                    <p class="text-diu-secondary text-xs font-semibold mt-1">Press Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Public Relations -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="19.jpg" onerror="imgError(this)" alt="Jannatul Ferdous Bony" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Jannatul Ferdous Bony</h4>
+                                    <p class="text-diu-secondary text-xs font-semibold mt-1">PR Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Deputy PR -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="20.jpg" onerror="imgError(this)" alt="Md. Shehabaul Alam" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Md. Shehabaul Alam</h4>
+                                    <p class="text-gray-500 text-xs mt-1">Deputy PR Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Design -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="21.jpg" onerror="imgError(this)" alt="T. M. Samin Ur Rahman" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">T. M. Samin Ur Rahman</h4>
+                                    <p class="text-diu-secondary text-xs font-semibold mt-1">Design Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Deputy Design -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="22.jpg" onerror="imgError(this)" alt="Golam Rabbi" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Golam Rabbi</h4>
+                                    <p class="text-gray-500 text-xs mt-1">Deputy Design Sec.</p>
+                                </div>
+                            </div>
+
+                            <!-- Sports -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="23.jpg" onerror="imgError(this)" alt="Sajjad Hossain" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Sajjad Hossain</h4>
+                                    <p class="text-diu-secondary text-xs font-semibold mt-1">Sports Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Cultural -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="24.jpg" onerror="imgError(this)" alt="Tabassum Akter Tasnim" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Tabassum Akter Tasnim</h4>
+                                    <p class="text-diu-secondary text-xs font-semibold mt-1">Cultural Secretary</p>
+                                </div>
+                            </div>
+
+                            <!-- Deputy Cultural -->
+                            <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                                <div class="p-2 flex justify-center">
+                                    <img src="25.jpg" onerror="imgError(this)" alt="Md. Abdul Ahad Pranto" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                                </div>
+                                <div class="p-3 text-center">
+                                    <h4 class="text-sm font-bold text-diu-dark">Md. Abdul Ahad Pranto</h4>
+                                    <p class="text-gray-500 text-xs mt-1">Deputy Cultural Sec.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EVENTS PAGE -->
+        <section id="events" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title mb-8">Upcoming Events</h2>
+            
+            <!-- Events Grid -->
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <!-- Event 1: National Language fest 2025 -->
+                <div class="info-card event-card" data-event-id="1">
+                    <div class="relative">
+                        <img src="fest poster.jpg" class="w-full h-48 object-cover" alt="National Language Fest 2025">
+                        <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">5-6 December</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">National Language fest 2025</h3>
+                        <p class="text-gray-600 text-sm mb-4">Celebrating linguistic diversity and cultural heritage through various competitions and performances.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 1 Image Inside</span>
+                            <button class="view-images-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-event-id="1">
+                                View Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 2: AI fest 2025 -->
+                <div class="info-card event-card" data-event-id="2">
+                    <div class="relative">
+                        <img src="ai poster.jpg" class="w-full h-48 object-cover" alt="AI Fest 2025">
+                        <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">25 November</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">AI fest 2025</h3>
+                        <p class="text-gray-600 text-sm mb-4">Exploring the future of artificial intelligence with workshops, competitions, and expert talks.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 7 Images Inside</span>
+                            <button class="view-images-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-event-id="2">
+                                View Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 3: CIS Premier League Season 5 -->
+                <div class="info-card event-card" data-event-id="3">
+                    <div class="relative">
+                        <img src="cricket poster.jpg" class="w-full h-48 object-cover" alt="CIS Premier League">
+                        <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">Ongoing</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">CIS Premier League Season 5</h3>
+                        <p class="text-gray-600 text-sm mb-4">The most anticipated cricket tournament of the year featuring intense matches and sportsmanship.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 10 Images Inside</span>
+                            <button class="view-images-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-event-id="3">
+                                View Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 4: CIS Department tour 2025 -->
+                <div class="info-card event-card" data-event-id="4">
+                    <div class="relative">
+                        <img src="tour poster.jpg" class="w-full h-48 object-cover" alt="CIS Department Tour">
+                        <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">Coming Soon</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">CIS Department Tour 2025</h3>
+                        <p class="text-gray-600 text-sm mb-4">An educational tour to explore tech industries and innovation hubs for hands-on learning.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-500 text-sm font-bold"><i class="fas fa-images mr-1"></i> Poster Only</span>
+                            <button class="view-images-btn bg-gray-400 text-white px-4 py-2 rounded text-sm font-medium cursor-not-allowed" disabled>
+                                No Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event 5: CIS Futsal Tournament 2025 -->
+                <div class="info-card event-card" data-event-id="5">
+                    <div class="relative">
+                        <img src="futsal poster.jpg" class="w-full h-48 object-cover" alt="CIS Futsal Tournament">
+                        <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">11-13 Feb</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">CIS Futsal Tournament 2025</h3>
+                        <p class="text-gray-600 text-sm mb-4">Fast-paced indoor football competition showcasing talent and teamwork among CIS students.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 3 Images Inside</span>
+                            <button class="view-images-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-event-id="5">
+                                View Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card event-card bg-gray-50 border-dashed border-2 border-gray-300 flex items-center justify-center">
+                    <div class="text-center p-8">
+                        <i class="fas fa-plus-circle text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-lg font-bold text-gray-500">More Events Coming Soon</h3>
+                        <p class="text-gray-400 text-sm mt-2">Stay tuned for updates</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MEMBERSHIP PAGE -->
+        <section id="members" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">Become a Member</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-8 border border-gray-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-diu-primary mb-6">Registration Form</h3>
+                        <form id="joinForm" novalidate>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" id="fullName" class="form-input" placeholder="e.g. John Doe">
+                                    <p class="error-message">Name is required</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Student ID</label>
+                                    <input type="number" id="studentId" class="form-input" placeholder="e.g. 1912345">
+                                    <p class="error-message">Valid ID required</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                                    <input type="email" id="email" class="form-input" placeholder="e.g. email@diu.edu.bd">
+                                    <p class="error-message">Valid email required</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+                                    <input type="text" id="phone" class="form-input" placeholder="+880...">
+                                    <p class="error-message">Phone required</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Select Department</label>
+                                <select id="dept" class="form-input">
+                                    <option value="">-- Select --</option>
+                                    <option value="cis">CIS</option>
+                                    <option value="swe">SWE</option>
+                                    <option value="cse">CSE</option>
+                                </select>
+                                <p class="error-message">Department required</p>
+                            </div>
+
+                            <div class="mb-6">
+                                <span class="block text-sm font-semibold text-gray-700 mb-2">Interests</span>
+                                <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                                    <label class="flex items-center"><input type="checkbox" name="interests" class="mr-2"> Web Development</label>
+                                    <label class="flex items-center"><input type="checkbox" name="interests" class="mr-2"> Cyber Security</label>
+                                    <label class="flex items-center"><input type="checkbox" name="interests" class="mr-2"> AI / ML</label>
+                                </div>
+                                <p id="interest-error" class="error-message">Select at least one</p>
+                            </div>
+
+                            <button type="submit" class="bg-diu-primary hover:bg-green-800 text-white font-bold py-3 px-8 rounded uppercase text-sm w-full md:w-auto transition">Submit Application</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 border border-gray-200 h-fit">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Why Join?</h3>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Priority Access to Workshops</li>
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Industry Mentorship</li>
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Certification for Participation</li>
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Exclusive Club Merchandise</li>
+                    </ul>
+                    <div class="mt-6 bg-diu-primary text-white p-4 text-center rounded">
+                        <span class="block text-sm opacity-80">Membership Fee</span>
+                        <span class="block text-2xl font-bold">100 BDT</span>
+                        <span class="block text-xs opacity-80">Lifetime Membership</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESOURCES PAGE -->
+        <section id="resources" class="page-section hidden">
+            <div class="container mx-auto px-4 py-12">
+                <h2 class="text-3xl font-bold text-gray-800 section-title">Student Resources</h2>
+                
+                <!-- YouTube Video Gallery -->
+                <div class="mb-12">
+                    <h3 class="text-2xl font-bold text-diu-primary mb-6">YouTube Tutorials & Workshop Recordings</h3>
+                    <p class="text-gray-600 mb-8">Watch our curated collection of tutorials, workshop recordings, and tech talks from industry experts.</p>
+                    
+                    <div id="youtube-videos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- YouTube Video 1 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="LfaMVlDaQ24">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/LfaMVlDaQ24/maxresdefault.jpg" alt="Data Structures & Algorithms" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">18:19</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Data Structures & Algorithms Tutorial</h4>
+                            <p class="text-gray-600 text-sm mb-3">Essential concepts for coding interviews and competitive programming.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 2 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="PaPN51Mm5qQ">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/PaPN51Mm5qQ/maxresdefault.jpg" alt="Web Development" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">11:55</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Full Stack Web Development Guide</h4>
+                            <p class="text-gray-600 text-sm mb-3">Learn modern web development from frontend to backend technologies.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 3 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="RBSGKlAvoiM">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/RBSGKlAvoiM/maxresdefault.jpg" alt="Python Programming" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">15:26</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Python Programming for Beginners</h4>
+                            <p class="text-gray-600 text-sm mb-3">Master Python fundamentals with practical examples and projects.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 4 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="xwI5OBEnsZU">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/xwI5OBEnsZU/maxresdefault.jpg" alt="Database Systems" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">22:08</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Database Management Systems</h4>
+                            <p class="text-gray-600 text-sm mb-3">Understanding SQL, NoSQL, and database design principles.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 5 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="CBYHwZcbD-s">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/CBYHwZcbD-s/maxresdefault.jpg" alt="Machine Learning" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">19:42</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Introduction to Machine Learning</h4>
+                            <p class="text-gray-600 text-sm mb-3">Learn ML algorithms, model training, and prediction techniques.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 6 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="LzMnsfqjzkA">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/LzMnsfqjzkA/maxresdefault.jpg" alt="Networking Concepts" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">17:35</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Computer Networking Fundamentals</h4>
+                            <p class="text-gray-600 text-sm mb-3">Essential networking concepts, protocols, and security basics.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 7 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="PLBlnK6fEyqRgLLlzdgiTUKULKJPYc0A4q" data-is-playlist="true">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/_uQrJ0TkZlc/maxresdefault.jpg" alt="Programming Playlist" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">Playlist</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Complete Programming Course Series</h4>
+                            <p class="text-gray-600 text-sm mb-3">Comprehensive programming tutorials covering multiple languages and concepts.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-list mr-1"></i> 15+ Videos</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 8 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="blKkRoZPxLc">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/blKkRoZPxLc/maxresdefault.jpg" alt="Software Engineering" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">24:15</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Software Engineering Principles</h4>
+                            <p class="text-gray-600 text-sm mb-3">Learn SDLC, design patterns, and best practices in software development.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Video 9 -->
+                        <div class="video-card rounded-xl border border-gray-200 p-4" data-video-id="mEsleV16qdo">
+                            <div class="video-thumbnail relative mb-4">
+                                <img src="https://img.youtube.com/vi/mEsleV16qdo/maxresdefault.jpg" alt="Cyber Security" class="rounded-lg">
+                                <div class="video-play-btn">
+                                    <i class="fas fa-play text-white text-2xl"></i>
+                                </div>
+                                <span class="video-duration">20:30</span>
+                            </div>
+                            <h4 class="video-title text-lg font-semibold text-gray-800 mb-2">Cyber Security Basics & Best Practices</h4>
+                            <p class="text-gray-600 text-sm mb-3">Essential security concepts for protecting systems and data.</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span><i class="fas fa-calendar-alt mr-1"></i> Recently Added</span>
+                                <span><i class="fas fa-eye mr-1"></i> CIS Recommended</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Resources -->
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-diu-primary mb-6">Other Resources</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 border border-gray-200 hover:border-diu-secondary transition group">
+                            <i class="fas fa-file-pdf text-4xl text-red-500 mb-4 group-hover:scale-110 transition duration-300"></i>
+                            <h3 class="font-bold text-lg mb-2">Academic Calendar</h3>
+                            <p class="text-gray-600 text-sm mb-4">Official DIU academic calendar for Fall 2025.</p>
+                            <a href="#" class="text-diu-primary font-bold text-sm hover:underline">Download PDF</a>
+                        </div>
+                        <div class="bg-white p-6 border border-gray-200 hover:border-diu-secondary transition group">
+                            <i class="fab fa-github text-4xl text-gray-800 mb-4 group-hover:scale-110 transition duration-300"></i>
+                            <h3 class="font-bold text-lg mb-2">Project Repository</h3>
+                            <p class="text-gray-600 text-sm mb-4">Source code for past club projects and hackathon winners.</p>
+                            <a href="#" class="text-diu-primary font-bold text-sm hover:underline">Visit GitHub</a>
+                        </div>
+                        <div class="bg-white p-6 border border-gray-200 hover:border-diu-secondary transition group">
+                            <i class="fas fa-book text-4xl text-green-600 mb-4 group-hover:scale-110 transition duration-300"></i>
+                            <h3 class="font-bold text-lg mb-2">Study Materials</h3>
+                            <p class="text-gray-600 text-sm mb-4">Lecture notes, slides, and reading materials for courses.</p>
+                            <a href="#" class="text-diu-primary font-bold text-sm hover:underline">Browse Library</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RESOURCE SUBMISSION FORM SECTION (Integrated from second file) -->
+            <div class="mt-20 bg-gray-50 py-16">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-12">
+                        <h3 class="text-3xl font-bold text-gray-800 section-title">Contribute to Resources</h3>
+                        <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Share your tutorials, code samples, or learning materials with the DIU CIS community</p>
+                    </div>
+                    
+                    <!-- Resource Submission Form -->
+                    <div class="min-h-screen w-full flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden">
+                        
+                        <div class="w-full md:w-1/2 bg-left-panel p-8 lg:p-16 flex flex-col justify-center order-2 md:order-1 relative">
+                            
+                            <div class="max-w-xl mx-auto md:mx-0">
+                                <div class="mb-6 inline-block">
+                                    <span class="bg-diu-accent text-white text-xs font-bold px-3 py-1.5 rounded uppercase tracking-wider shadow-sm">
+                                        Contribute
+                                    </span>
+                                </div>
+
+                                <h1 class="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-none mb-2">
+                                    Build the<br>Library
+                                </h1>
+                                <h1 class="text-5xl lg:text-7xl font-extrabold text-diu-accent leading-none mb-8">
+                                    Together
+                                </h1>
+
+                                <p class="text-lg text-gray-700 mb-12 leading-relaxed">
+                                    Join our community of developers. Submit tutorials, share templates, and help us grow the knowledge base for DIU CIS Club.
+                                </p>
+
+                                <!-- Steps -->
+                                <div class="space-y-8">
+                                    
+                                    <!--- Highlighted Step 1 -->
+                                    <div class="highlight-box">
+                                        <span class="code-badge">&lt;&gt;</span>
+                                        <div class="flex gap-4 items-start">
+                                            <div class="step-circle">1</div>
+                                            <div>
+                                                <h3 class="font-bold text-lg text-gray-900 mb-1">Quality First</h3>
+                                                <p class="text-sm text-gray-600 leading-relaxed">
+                                                    Ensure your content is well-structured, accurate, and provides real value to the community.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 2 -->
+                                    <div class="flex gap-4 px-4 items-start">
+                                        <div class="step-circle">2</div>
+                                        <div>
+                                            <h3 class="font-bold text-lg text-gray-900 mb-1">Original Work</h3>
+                                            <p class="text-sm text-gray-600 leading-relaxed">
+                                                Submit only your original content or properly attribute sources.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 3 -->
+                                    <div class="flex gap-4 px-4 items-start">
+                                        <div class="step-circle">3</div>
+                                        <div>
+                                            <h3 class="font-bold text-lg text-gray-900 mb-1">Clear Documentation</h3>
+                                            <p class="text-sm text-gray-600 leading-relaxed">
+                                                Include detailed descriptions and prerequisites.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT PANEL: Form -->
+                        <div class="w-full md:w-1/2 bg-right-panel p-8 lg:p-16 flex flex-col justify-center order-1 md:order-2 overflow-y-auto">
+                            <div class="max-w-lg mx-auto w-full bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+                                <h2 class="text-3xl font-bold text-gray-900 mb-2">Submit Resource</h2>
+                                <p class="text-gray-600 mb-6 text-sm">Fill out the details below to contribute.</p>
+
+                                <form id="resourceForm" class="space-y-4" onsubmit="handleResourceSubmit(event)">
+                                    
+                                    <!-- Row 1: Name & Email Side by Side -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                                                Name <span class="text-diu-accent">*</span>
+                                            </label>
+                                            <input type="text" id="resourceName" required placeholder="John Doe" 
+                                                class="resource-input">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                                                Email <span class="text-diu-accent">*</span>
+                                            </label>
+                                            <input type="email" id="resourceEmail" required placeholder="john@example.com" 
+                                                class="resource-input">
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 2: Type & Title -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                                                Type <span class="text-diu-accent">*</span>
+                                            </label>
+                                            <select id="resourceType" required class="resource-input">
+                                                <option value="Tutorial">Tutorial</option>
+                                                <option value="Template">Template</option>
+                                                <option value="Article">Article</option>
+                                                <option value="Video">Video</option>
+                                                <option value="Code Sample">Code Sample</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                                                Title <span class="text-diu-accent">*</span>
+                                            </label>
+                                            <input type="text" id="resourceTitle" required placeholder="Resource Title" 
+                                                class="resource-input">
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 3: Description -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                                            Description <span class="text-diu-accent">*</span>
+                                        </label>
+                                        <textarea id="resourceDescription" required rows="3" placeholder="Briefly describe your resource..." 
+                                            class="resource-input resize-none"></textarea>
+                                    </div>
+
+                                    <!-- Row 4: File Upload -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                                            File Upload
+                                        </label>
+                                        <div id="dropZone" class="resource-input border-2 border-dashed border-gray-400/50 rounded p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors" onclick="document.getElementById('resourceFileInput').click()">
+                                            <input type="file" id="resourceFileInput" class="hidden" onchange="handleResourceFileSelect(this)">
+                                            <i class="fas fa-cloud-upload-alt text-xl text-gray-500 mb-1"></i>
+                                            <span id="fileLabel" class="text-xs font-bold text-gray-600">Click to Upload (PDF, ZIP, DOC, PPT)</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Row 5: Link -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                                            External Link
+                                        </label>
+                                        <input type="url" id="resourceLink" placeholder="https://" 
+                                            class="resource-input">
+                                    </div>
+
+                                    <!-- Submit -->
+                                    <button type="submit" id="resourceSubmitBtn" class="w-full bg-diu-primary text-white font-bold py-3 px-6 rounded shadow-lg hover:bg-green-800 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 mt-2">
+                                        <span>SUBMIT RESOURCE</span> <i class="fas fa-arrow-right text-xs"></i>
+                                    </button>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY PAGE - UPDATED WITH 16-PHOTO GALLERY -->
+        <section id="gallery" class="page-section hidden">
+            <!-- Photo Gallery Section -->
+            <div class="photo-gallery-section">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold text-gray-800 mb-4">Photo Gallery</h2>
+                        <p class="text-gray-600 text-lg max-w-2xl mx-auto">Explore our collection of memorable moments from events, workshops, and club activities</p>
+                    </div>
+                    
+                    <!-- Gallery Filter -->
+                    <div class="flex flex-wrap justify-center gap-4 mb-8">
+                        <button class="gallery-filter-btn active" data-filter="all">All Photos</button>
+                        <button class="gallery-filter-btn" data-filter="events">Events</button>
+                        <button class="gallery-filter-btn" data-filter="workshops">Workshops</button>
+                        <button class="gallery-filter-btn" data-filter="achievements">Achievements</button>
+                        <button class="gallery-filter-btn" data-filter="members">Members</button>
+                    </div>
+                    
+                    <!-- Gallery Grid -->
+                    <div class="gallery-grid-container" id="photo-gallery">
+                        <!-- 16 Template Images -->
+                        <div class="gallery-item" data-category="events">
+                            <img src="g1.jpeg" alt="CIS Club Event 1" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Hackathon 2025</h4>
+                                <p class="text-sm">Coding competition winners</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="workshops">
+                            <img src="g3.jpeg" alt="Coding Workshop" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Cultural Function</h4>
+                                <p class="text-sm"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="achievements">
+                            <img src="g2.jpeg" alt="Award Ceremony" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Award Ceremony</h4>
+                                <p class="text-sm">Tournament winners</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="members">
+                            <img src="g4.jpeg" alt="Team Meeting" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Coding Workshop</h4>
+                                <p class="text-sm">Coding session</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="events">
+                            <img src="g5.jpeg" alt="Tech Fest" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Tech Fest 2025</h4>
+                                <p class="text-sm">Annual technology exhibition</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="workshops">
+                            <img src="g6.jpeg" alt="Web Dev Workshop" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Award Giving Ceremony</h4>
+                                <p class="text-sm">Campaign</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="achievements">
+                            <img src="g7.jpeg" alt="Project Showcase" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Planning Sessions</h4>
+                                <p class="text-sm">Team Meeting</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="members">
+                            <img src="g9.jpeg" alt="Study Group" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Club Enrollment</h4>
+                                <p class="text-sm"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="events">
+                            <img src="g10.jpeg" alt="Seminar" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Winnig moments</h4>
+                                <p class="text-sm"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="workshops">
+                            <img src="g11.jpeg" alt="AI Workshop" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">AI Workshop</h4>
+                                <p class="text-sm">Machine learning basics</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="achievements">
+                            <img src="g12.jpeg" alt="Certificate Distribution" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Orientation program</h4>
+                                <p class="text-sm">Fall 2025</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="members">
+                            <img src="g13.jpeg" alt="Club Members" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Club Members</h4>
+                                <p class="text-sm">Annual group photo</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="events">
+                            <img src="g14.jpeg" alt="Networking Event" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Cultural Event</h4>
+                                <p class="text-sm"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="workshops">
+                            <img src="g15.jpeg" alt="Mobile App Workshop" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Orientation Program</h4>
+                                <p class="text-sm">Summer 2025</p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="achievements">
+                            <img src="g16.jpeg" alt="Competition" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Group Photo</h4>
+                                <p class="text-sm"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="gallery-item" data-category="members">
+                            <img src="g8.jpeg" alt="Team Building" class="gallery-image">
+                            <div class="gallery-overlay">
+                                <h4 class="font-bold text-lg">Workshop</h4>
+                                <p class="text-sm">Learning DIfferent Languages</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Section -->
+                    <div class="mt-12 bg-white rounded-xl shadow-md p-8">
+                        <h3 class="text-2xl font-bold text-diu-primary mb-6 text-center">Upload Your Photos</h3>
+                        <p class="text-gray-600 text-center mb-8">Share your memorable moments with the CIS Club community</p>
+                        
+                        <div class="gallery-upload-area" id="uploadArea" onclick="document.getElementById('photoUpload').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-2">Click to Upload</h4>
+                            <p class="text-gray-600 mb-4">Drag & drop or click to select photos</p>
+                            <p class="text-sm text-gray-500">Supports JPG, PNG, GIF up to 5MB each</p>
+                            <input type="file" id="photoUpload" class="hidden" accept="image/*" multiple onchange="handlePhotoUpload(event)">
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <button class="bg-diu-primary text-white px-8 py-3 rounded font-bold hover:bg-green-800 transition" onclick="document.getElementById('photoUpload').click()">
+                                <i class="fas fa-upload mr-2"></i> Upload Photos
+                            </button>
+                            <p class="text-gray-500 text-sm mt-4">Photos will be reviewed before appearing in gallery</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Keep the existing gallery events section -->
+            <div class="container mx-auto px-4 py-12">
+                <h3 class="text-3xl font-bold text-gray-800 section-title mb-8">Event Galleries</h3>
+                
+                <div id="gallery-grid" class="gallery-grid">
+                    <!-- Gallery Event 1: DIU Club Enrollment Campaign (18-19 Oct) -->
+                    <div class="info-card gallery-card" data-gallery-id="1">
+                        <div class="relative">
+                            <img src="clubposter.jpg" class="w-full h-48 object-cover" alt="DIU Club Enrollment Campaign">
+                            <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">18-19 Oct</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">DIU Club Enrollment Campaign</h3>
+                            <p class="text-gray-600 text-sm mb-4">Join us for the exciting club enrollment campaign with fun activities and informative sessions.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 4 Images Inside</span>
+                                <button class="view-gallery-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-gallery-id="1">
+                                    View Gallery
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Event 2: Orientation Fall 2025 -->
+                    <div class="info-card gallery-card" data-gallery-id="2">
+                        <div class="relative">
+                            <img src="fallposter.jpg" class="w-full h-48 object-cover" alt="Orientation Fall 2025">
+                            <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">Fall 2025</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Orientation Fall 2025</h3>
+                            <p class="text-gray-600 text-sm mb-4">Welcome new students to DIU with an exciting orientation program full of activities and information.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 2 Images Inside</span>
+                                <button class="view-gallery-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-gallery-id="2">
+                                    View Gallery
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Event 3: DIU Club Enrollment Campaign (25 March) -->
+                    <div class="info-card gallery-card" data-gallery-id="3">
+                        <div class="relative">
+                            <img src="club poster.jpg" class="w-full h-48 object-cover" alt="DIU Club Enrollment Campaign March">
+                            <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">25 March</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">DIU Club Enrollment Campaign</h3>
+                            <p class="text-gray-600 text-sm mb-4">Spring enrollment campaign for all DIU clubs with special workshops and networking sessions.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 6 Images Inside</span>
+                                <button class="view-gallery-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-gallery-id="3">
+                                    View Gallery
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Event 4: Orientation Summer 2025 -->
+                    <div class="info-card gallery-card" data-gallery-id="4">
+                        <div class="relative">
+                            <img src="summerposter.jpg" class="w-full h-48 object-cover" alt="Orientation Summer 2025">
+                            <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">Summer 2025</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Orientation Summer 2025</h3>
+                            <p class="text-gray-600 text-sm mb-4">Summer semester orientation for new students with campus tours and faculty introductions.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 5 Images Inside</span>
+                                <button class="view-gallery-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-gallery-id="4">
+                                    View Gallery
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Event 5: Meet The Alumni with Ifter (15 March) -->
+                    <div class="info-card gallery-card" data-gallery-id="5">
+                        <div class="relative">
+                            <img src="iftar poster.jpg" class="w-full h-48 object-cover" alt="Meet The Alumni with Ifter">
+                            <div class="absolute top-0 left-0 bg-diu-primary text-white px-3 py-1 text-sm font-bold">15 March</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Meet The Alumni with Ifter</h3>
+                            <p class="text-gray-600 text-sm mb-4">Special Ifter gathering with alumni to network and share experiences in a traditional setting.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-diu-primary text-sm font-bold"><i class="fas fa-images mr-1"></i> 7 Images Inside</span>
+                                <button class="view-gallery-btn bg-diu-secondary hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition" data-gallery-id="5">
+                                    View Gallery
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT PAGE -->
+        <section id="contact" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">Contact Us</h2>
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/3 bg-diu-primary text-white p-8 rounded-sm">
+                    <h3 class="text-xl font-bold mb-6">Get In Touch</h3>
+                    <div class="space-y-4 text-sm">
+                        <p><i class="fas fa-map-marker-alt mr-3 w-5"></i> Daffodil Smart City, Ashulia, Dhaka</p>
+                        <p><i class="fas fa-phone mr-3 w-5"></i> +88 09617901212</p>
+                        <p><i class="fas fa-envelope mr-3 w-5"></i> cisclub@diu.edu.bd</p>
+                    </div>
+                    <div class="mt-8">
+                        <h4 class="font-bold mb-3">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-facebook-f text-lg"></i></a>
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-twitter text-lg"></i></a>
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-instagram text-lg"></i></a>
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-linkedin-in text-lg"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-2/3 bg-white border border-gray-200 p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Send a Message</h3>
+                    <form id="contactForm" novalidate>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div>
+                                <input type="text" id="contactName" class="form-input" placeholder="Your Name">
+                                <p class="error-message">Required</p>
+                            </div>
+                            <div>
+                                <input type="email" id="contactEmail" class="form-input" placeholder="Email Address">
+                                <p class="error-message">Required</p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <textarea id="contactMessage" rows="4" class="form-input" placeholder="Write your message..."></textarea>
+                            <p class="error-message">Required</p>
+                        </div>
+                        <button type="submit" class="bg-gray-800 hover:bg-diu-primary text-white font-bold py-3 px-8 rounded uppercase text-sm transition">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#1b1b1b] text-gray-300 py-12 mt-auto text-sm">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">About DIU</h4>
+                <p class="leading-relaxed mb-4">Daffodil International University is a top-ranking private university in Bangladesh. The CIS Club represents the Department of Computing and Information System.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-diu-secondary transition">Apply Online</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Student Portal</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Faculty Members</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Notice Board</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">Important Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-diu-secondary transition">Convocation</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Career Services</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Library</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Alumni Association</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">Contact</h4>
+                <p class="mb-2">Daffodil Smart City, Ashulia, Dhaka, Bangladesh.</p>
+                <p class="mb-2">Phone: +88 09617901212</p>
+                <p>Email: info@daffodilvarsity.edu.bd</p>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-xs">
+            <p>&copy; 2025 Daffodil International University | CIS Department. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scroll Top -->
+    <button id="scrollTopBtn" class="fixed bottom-6 right-6 bg-diu-primary text-white p-3 rounded shadow hover:bg-green-800 hidden transition z-40">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Toast -->
+    <div id="toast">Operation Successful</div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="lightbox-nav">
+            <button class="lightbox-btn" onclick="prevLightboxImage()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="lightbox-btn" onclick="nextLightboxImage()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <div class="lightbox-content">
+            <div class="lightbox-counter" id="lightbox-counter">1 / 16</div>
+            <img src="" alt="" class="lightbox-img" id="lightbox-img">
+            <div class="lightbox-caption" id="lightbox-caption">Image Caption</div>
+        </div>
+    </div>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+        <img id="modal-image" src="" class="max-w-full max-h-[90vh]">
+    </div>
+
+    <!-- Email Verification Modal -->
+    <div id="email-verification-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full text-center shadow-2xl animate-bounce-in">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-envelope-open-text text-4xl text-green-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Account Created Successfully!</h3>
+            <p class="text-gray-600 mb-4">We've sent a verification email to your address. Please check your inbox to activate your account.</p>
+            <p class="text-sm text-gray-500 mb-6">You'll also receive a welcome email with your login credentials.</p>
+            <button onclick="closeVerificationModal()" class="bg-diu-primary text-white px-6 py-2 rounded font-bold hover:bg-green-700 w-full transition">Got it</button>
+        </div>
+    </div>
+
+    <!-- Resource Submission Success Modal -->
+    <div id="resource-success-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div class="bg-white rounded-xl p-8 max-w-sm w-full mx-4 shadow-2xl transform scale-90 transition-transform duration-300">
+            <div class="text-center">
+                <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Resource Submitted!</h3>
+                <p class="text-gray-600 mb-6 text-sm">Thank you for contributing to DIU CIS Club resources.</p>
+                <button onclick="closeResourceModal()" class="w-full bg-diu-primary text-white font-bold py-2.5 rounded hover:bg-green-800 transition">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Images Modal -->
+    <div id="event-images-modal" class="fixed inset-0 bg-black/95 z-50 hidden">
+        <button class="close-modal-btn" onclick="closeEventImagesModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-content">
+            <div class="bg-diu-primary text-white p-6">
+                <h3 id="event-modal-title" class="text-2xl font-bold">Event Images</h3>
+                <p id="event-modal-subtitle" class="text-white/80">Click on images to view larger</p>
+            </div>
+            <div id="event-images-container" class="event-images-grid">
+                <!-- Images will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="password-reset-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Reset Password</h3>
+            <p class="text-gray-600 mb-6">Enter your email address and we'll send you a password reset link.</p>
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                <input type="email" id="resetEmail" class="form-input" placeholder="student@diu.edu.bd">
+            </div>
+            <div id="reset-error" class="text-red-500 text-sm mb-4 hidden"></div>
+            <div class="flex gap-3">
+                <button onclick="sendPasswordReset()" class="bg-diu-primary text-white px-6 py-2 rounded font-bold hover:bg-green-700 flex-1">Send Reset Link</button>
+                <button onclick="closePasswordResetModal()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded font-bold hover:bg-gray-400">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyA_pgXq4HGZ6xVknSw-pJiw2zvQzPPR0sA",
+          authDomain: "diu-cis-club.firebaseapp.com",
+          projectId: "diu-cis-club",
+          storageBucket: "diu-cis-club.firebasestorage.app",
+          messagingSenderId: "352494712046",
+          appId: "1:352494712046:web:615dc4d8ed94660824efff",
+          measurementId: "G-NTCN5L79HM"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+      </script>
+</body>
+</html>

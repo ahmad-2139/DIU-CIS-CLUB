@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS Club - Daffodil International University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        diu: {
+                            primary: '#006a4e',
+                            secondary: '#f7941d',
+                            dark: '#1b1b1b',
+                            light: '#f4f4f4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- CUSTOM STYLES --- */
+        body {
+            background-color: #f9f9f9;
+        }
+
+        /* Top Bar Styling */
+        .top-bar {
+            background-color: #006a4e;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        /* Navigation */
+        .nav-link {
+            position: relative;
+            color: #333;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #006a4e;
+        }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #f7941d;
+        }
+
+        /* Hero Slider */
+        .slider-container {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        .slide-overlay {
+            background: linear-gradient(to right, rgba(0, 106, 78, 0.8), rgba(0, 0, 0, 0.3));
+        }
+
+        /* Marquee / News Ticker */
+        .news-ticker-container {
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .news-ticker-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Section Headers */
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: #f7941d;
+            margin-top: 5px;
+        }
+
+        /* Card Styles */
+        .info-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            transition: all 0.3s ease;
+        }
+        .info-card:hover {
+            border-color: #006a4e;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .date-box {
+            background-color: #006a4e;
+            color: white;
+        }
+
+        /* Form Styles */
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #006a4e;
+        }
+        .error-message {
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+        }
+        .form-input.invalid {
+            border-color: #dc2626;
+        }
+
+        /* Auth Tabs */
+        .auth-tab {
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+        .auth-tab.active {
+            border-bottom-color: #006a4e;
+            color: #006a4e;
+            font-weight: bold;
+            background-color: white;
+        }
+
+        .user-type-radio:checked + div {
+            background-color: #006a4e;
+            color: white;
+            border-color: #006a4e;
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            right: 30px;
+            bottom: 30px;
+            font-size: 17px;
+        }
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        /* Modal Animations */
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .animate-bounce-in {
+            animation: bounceIn 0.5s ease-out forwards;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-gray-800">
+
+    <div class="top-bar py-2 px-4 hidden md:block">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex space-x-6">
+                <span><i class="fas fa-phone-alt mr-2"></i>+88 09617901212</span>
+                <span><i class="fas fa-envelope mr-2"></i>cisclub@diu.edu.bd</span>
+            </div>
+            <div class="flex items-center space-x-4 font-medium" id="top-bar-actions">
+                <a href="#" class="hover:text-diu-secondary transition">Student Portal</a>
+                <span class="border-l border-white/30 h-4"></span>
+                <a href="#" class="hover:text-diu-secondary transition">Alumni</a>
+                <span class="border-l border-white/30 h-4"></span>
+                <a href="#" class="hover:text-diu-secondary transition">Library</a>
+                <span class="border-l border-white/30 h-4"></span>
+                
+                <div id="logged-out-view">
+                    <button onclick="navigateTo('auth')" class="bg-white text-diu-primary px-3 py-1 rounded text-xs font-bold uppercase hover:bg-diu-secondary hover:text-white transition shadow">
+                        <i class="fas fa-user-circle mr-1"></i> Login / Sign Up
+                    </button>
+                </div>
+                
+                <div id="logged-in-view" class="hidden flex items-center gap-3">
+                    <span class="text-xs">Welcome, <span id="nav-user-name" class="font-bold text-diu-secondary">User</span></span>
+                    <button onclick="alert('Profile Page Coming Soon!')" class="text-xs hover:underline"><i class="fas fa-id-card"></i> Profile</button>
+                    <button onclick="logout()" class="text-xs bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-white">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center cursor-pointer" onclick="navigateTo('home')">
+                    <div class="flex items-center gap-4">
+                        <img src="cis club logo.jpg" alt="CIS Club Logo" class="h-14 w-auto object-contain">
+                        <div class="leading-tight">
+                            <h1 class="text-xl font-bold text-diu-primary uppercase tracking-wide">Daffodil</h1>
+                            <span class="text-xs font-semibold text-gray-500 block">International University</span>
+                            </div>
+                    </div>
+                </div>
+
+                <nav class="hidden lg:flex space-x-8">
+                    <a onclick="navigateTo('home')" class="nav-link active">Home</a>
+                    <a onclick="navigateTo('about')" class="nav-link">About</a>
+                    <a onclick="navigateTo('events')" class="nav-link">Events</a>
+                    <a onclick="navigateTo('members')" class="nav-link">Membership</a>
+                    <a onclick="navigateTo('resources')" class="nav-link">Resources</a>
+                    <a onclick="navigateTo('gallery')" class="nav-link">Gallery</a>
+                    <a onclick="navigateTo('contact')" class="nav-link">Contact</a>
+                    <a onclick="navigateTo('auth')" class="nav-link">Account</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-600 hover:text-diu-primary"><i class="fas fa-search text-lg"></i></button>
+                    <button id="mobile-menu-btn" class="lg:hidden text-2xl text-diu-primary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-gray-100">
+            <div class="flex flex-col px-4 py-4 space-y-3">
+                <div id="mobile-auth-btn">
+                    <a href="#" onclick="navigateTo('auth'); toggleMobileMenu()" class="block text-diu-primary font-bold"><i class="fas fa-sign-in-alt mr-2"></i>Login / Sign Up</a>
+                </div>
+                <a href="#" onclick="navigateTo('home'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Home</a>
+                <a href="#" onclick="navigateTo('about'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">About</a>
+                <a href="#" onclick="navigateTo('events'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Events</a>
+                <a href="#" onclick="navigateTo('members'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Membership</a>
+                <a href="#" onclick="navigateTo('resources'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Resources</a>
+                <a href="#" onclick="navigateTo('gallery'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Gallery</a>
+                <a href="#" onclick="navigateTo('contact'); toggleMobileMenu()" class="text-gray-700 font-medium hover:text-diu-primary">Contact</a>
+                <div id="mobile-logout-btn" class="hidden border-t pt-2 mt-2">
+                    <a href="#" onclick="alert('Profile'); toggleMobileMenu()" class="block text-diu-secondary font-bold"><i class="fas fa-id-card mr-2"></i>My Profile</a>
+                    <a href="#" onclick="logout(); toggleMobileMenu()" class="block text-red-600 font-bold mt-2"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-content" class="flex-grow">
+        
+        <section id="auth" class="page-section container mx-auto px-4 py-16 hidden">
+            <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+                <div class="flex border-b bg-gray-50">
+                    <div id="tab-login" class="w-1/2 py-4 text-center font-bold text-lg auth-tab active" onclick="switchAuthTab('login')">
+                        Login
+                    </div>
+                    <div id="tab-signup" class="w-1/2 py-4 text-center font-bold text-lg auth-tab" onclick="switchAuthTab('signup')">
+                        Create Account
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    
+                    <div id="login-form-container">
+                        <h2 class="text-2xl font-bold text-diu-primary mb-6 text-center">Member Login</h2>
+                        <form id="loginForm" onsubmit="handleLogin(event)" novalidate>
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+                                    <input type="email" id="loginEmail" class="form-input pl-10" placeholder="student@diu.edu.bd" required>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+                                    <input type="password" id="loginPass" class="form-input pl-10" placeholder="********" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-diu-primary hover:bg-green-800 text-white font-bold py-3 rounded transition shadow-md">
+                                LOGIN
+                            </button>
+                            <p class="text-center mt-4 text-sm text-gray-600">Forgot Password? <a href="#" class="text-diu-secondary hover:underline">Reset here</a></p>
+                            <div id="login-error" class="text-red-500 text-center text-sm mt-3 hidden">Invalid email or password.</div>
+                        </form>
+                    </div>
+
+                    <div id="signup-form-container" class="hidden">
+                        <h2 class="text-2xl font-bold text-diu-primary mb-2 text-center">Join CIS Club</h2>
+                        <p class="text-center text-gray-500 mb-6 text-sm">Select your category to proceed</p>
+                        
+                        <form id="signupForm" onsubmit="handleSignup(event)" novalidate>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="userType" value="cis" class="user-type-radio hidden" checked onchange="updateSignupFields()">
+                                    <div class="border border-gray-300 rounded p-3 text-center text-sm font-semibold transition hover:bg-gray-50">
+                                        <i class="fas fa-laptop-code block text-lg mb-1"></i> From CIS Dept
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="userType" value="diu_other" class="user-type-radio hidden" onchange="updateSignupFields()">
+                                    <div class="border border-gray-300 rounded p-3 text-center text-sm font-semibold transition hover:bg-gray-50">
+                                        <i class="fas fa-university block text-lg mb-1"></i> Other DIU Dept
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="userType" value="outside" class="user-type-radio hidden" onchange="updateSignupFields()">
+                                    <div class="border border-gray-300 rounded p-3 text-center text-sm font-semibold transition hover:bg-gray-50">
+                                        <i class="fas fa-globe block text-lg mb-1"></i> Outside DIU
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                                    <input type="text" id="regName" class="form-input" placeholder="Enter full name" required>
+                                </div>
+
+                                <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                                        <input type="email" id="regEmail" class="form-input" placeholder="email@example.com" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+                                        <input type="text" id="regPhone" class="form-input" placeholder="+8801...">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
+                                        <input type="password" id="regPass" class="form-input" placeholder="Create password" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Confirm Password <span class="text-red-500">*</span></label>
+                                        <input type="password" id="regConfirmPass" class="form-input" placeholder="Repeat password" required>
+                                        <p id="pass-error" class="error-message">Passwords do not match</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-8 bg-diu-secondary hover:bg-orange-600 text-white font-bold py-3 rounded transition shadow-md">
+                                REGISTER NOW
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="home" class="page-section active">
+            <div class="slider-container">
+                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-4xl md:text-6xl font-bold mb-4 uppercase">Empowering Tech Leaders</h2>
+                        <p class="text-lg md:text-xl mb-8 max-w-2xl">Join the Department of Computing and Information System Club to bridge the gap between academia and industry.</p>
+                        <div class="flex gap-4">
+                            <button onclick="navigateTo('members')" class="bg-diu-secondary hover:bg-orange-600 text-white px-8 py-3 rounded font-bold uppercase text-sm transition">Join Club</button>
+                            <button onclick="navigateTo('about')" class="border-2 border-white hover:bg-white hover:text-diu-primary text-white px-8 py-3 rounded font-bold uppercase text-sm transition">Learn More</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1531545514256-b1400bc00f31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center px-8 md:px-20 text-white">
+                        <h2 class="text-4xl md:text-6xl font-bold mb-4 uppercase">Fall 2025 Events</h2>
+                        <p class="text-lg md:text-xl mb-8 max-w-2xl">Workshops, Hackathons, and Seminars designed to sharpen your skills.</p>
+                        <button onclick="navigateTo('events')" class="bg-diu-secondary hover:bg-orange-600 text-white px-8 py-3 rounded font-bold uppercase text-sm transition w-fit">View Calendar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="news-ticker-container py-3 flex items-center">
+                <div class="bg-diu-primary text-white px-6 py-1 font-bold z-10 text-sm uppercase">Latest Notice</div>
+                <div class="news-ticker-content text-gray-700 text-sm font-medium">
+                    <span class="mx-8"><i class="fas fa-bullhorn text-diu-secondary mr-2"></i> Registration for Fall 2025 Membership is now open!</span>
+                    <span class="mx-8"><i class="fas fa-calendar-alt text-diu-secondary mr-2"></i> Intro to React.js Workshop scheduled for Oct 15th.</span>
+                    <span class="mx-8"><i class="fas fa-trophy text-diu-secondary mr-2"></i> Congratulations to our Hackathon Winners!</span>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-16">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <div class="lg:col-span-2">
+                        <h3 class="text-3xl font-bold text-gray-800 section-title">Welcome to CIS Club</h3>
+                        <p class="text-gray-600 leading-relaxed mb-6">
+                            The CIS Club is the heartbeat of the Computing and Information System department at Daffodil International University. Since our inception, we have focused on one goal: <strong>Innovation through Collaboration.</strong>
+                        </p>
+                        <p class="text-gray-600 leading-relaxed mb-8">
+                            We provide a platform for students to explore emerging technologies, participate in competitive programming, and engage in community services.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex items-start">
+                                <div class="bg-gray-100 p-3 rounded text-diu-primary mr-4"><i class="fas fa-laptop-code text-2xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-1">Skill Development</h4>
+                                    <p class="text-sm text-gray-500">Regular workshops on Web, App, and AI.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-gray-100 p-3 rounded text-diu-primary mr-4"><i class="fas fa-users text-2xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-1">Networking</h4>
+                                    <p class="text-sm text-gray-500">Connect with alumni and industry leaders.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 shadow-sm p-6">
+                        <h4 class="text-xl font-bold text-diu-primary mb-4 border-b pb-2">Notices & Events</h4>
+                        <ul class="space-y-4">
+                            <li class="flex border-b border-gray-100 pb-3">
+                                <div class="bg-gray-100 text-center px-3 py-1 rounded mr-3 h-fit min-w-[60px]">
+                                    <span class="block text-xs font-bold text-gray-500">OCT</span>
+                                    <span class="block text-xl font-bold text-diu-primary">15</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="font-semibold text-gray-800 hover:text-diu-secondary text-sm block">Intro to React.js Workshop</a>
+                                    <span class="text-xs text-gray-500"><i class="far fa-clock"></i> 2:00 PM - Lab 404</span>
+                                </div>
+                            </li>
+                            <li class="flex border-b border-gray-100 pb-3">
+                                <div class="bg-gray-100 text-center px-3 py-1 rounded mr-3 h-fit min-w-[60px]">
+                                    <span class="block text-xs font-bold text-gray-500">OCT</span>
+                                    <span class="block text-xl font-bold text-diu-primary">22</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="font-semibold text-gray-800 hover:text-diu-secondary text-sm block">Cyber Security Seminar</a>
+                                    <span class="text-xs text-gray-500"><i class="far fa-clock"></i> 11:00 AM - Auditorium</span>
+                                </div>
+                            </li>
+                            <li class="flex">
+                                <div class="bg-gray-100 text-center px-3 py-1 rounded mr-3 h-fit min-w=[60px]">
+                                    <span class="block text-xs font-bold text-gray-500">NOV</span>
+                                    <span class="block text-xl font-bold text-diu-primary">05</span>
+                                </div>
+                                <div>
+                                    <a href="#" class="font-semibold text-gray-800 hover:text-diu-secondary text-sm block">Fall Gaming Fest</a>
+                                    <span class="text-xs text-gray-500"><i class="far fa-clock"></i> 10:00 AM - Lounge</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <button onclick="navigateTo('events')" class="w-full mt-6 bg-gray-800 text-white py-2 text-sm font-bold uppercase hover:bg-diu-primary transition">View All Events</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-100 py-16">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-10">
+                        <h3 class="text-3xl font-bold text-gray-800 section-title">Life at CIS Club</h3>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Hackathons</div>
+                        </div>
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Team Work</div>
+                        </div>
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="https://images.unsplash.com/photo-1531498860502-7c67cf02f657?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Seminars</div>
+                        </div>
+                        <div class="h-48 overflow-hidden relative group">
+                            <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-diu-primary/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold">Celebrations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">About the Club</h2>
+            
+            <div class="flex flex-col md:flex-row gap-8 mb-12">
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="About CIS" class="rounded shadow-md w-full">
+                </div>
+                <div class="md:w-1/2 space-y-4">
+                    <h3 class="text-2xl font-bold text-diu-primary">Our Mission</h3>
+                    <p class="text-gray-600">The mission of the CIS Club is to create a nurturing environment where students can bridge the gap between theoretical knowledge and practical application.</p>
+                    
+                    <h3 class="text-2xl font-bold text-diu-primary pt-4">Our History</h3>
+                    <p class="text-gray-600">Established in Fall 2015, the CIS Club started as a small study group. Today, it is one of the most vibrant clubs at DIU, organizing national-level hackathons and tech fests.</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-8 border border-gray-200">
+                <h3 class="text-2xl font-bold text-center mb-8">Executive Committee</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="info-card p-4 text-center">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=60" class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-gray-100 mb-4">
+                        <h4 class="font-bold text-lg">John Doe</h4>
+                        <p class="text-diu-primary font-medium text-sm">President</p>
+                    </div>
+                    <div class="info-card p-4 text-center">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=60" class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-gray-100 mb-4">
+                        <h4 class="font-bold text-lg">Jane Smith</h4>
+                        <p class="text-diu-primary font-medium text-sm">Vice President</p>
+                    </div>
+                    <div class="info-card p-4 text-center">
+                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=60" class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-gray-100 mb-4">
+                        <h4 class="font-bold text-lg">Mike Johnson</h4>
+                        <p class="text-diu-primary font-medium text-sm">General Secretary</p>
+                    </div>
+                    <div class="info-card p-4 text-center">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=60" class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-gray-100 mb-4">
+                        <h4 class="font-bold text-lg">Sarah Lee</h4>
+                        <p class="text-diu-primary font-medium text-sm">Treasurer</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="page-section hidden container mx-auto px-4 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 section-title mb-0">Events Calendar</h2>
+                <div class="mt-4 md:mt-0 space-x-2">
+                    <button class="filter-btn active bg-diu-primary text-white px-4 py-2 rounded text-sm uppercase font-bold" data-filter="all">All</button>
+                    <button class="filter-btn bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded text-sm uppercase font-bold" data-filter="workshop">Workshops</button>
+                    <button class="filter-btn bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded text-sm uppercase font-bold" data-filter="seminar">Seminars</button>
+                    <button class="filter-btn bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded text-sm uppercase font-bold" data-filter="social">Social</button>
+                </div>
+            </div>
+
+            <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="info-card event-item" data-category="workshop">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-48 object-cover">
+                        <div class="absolute bottom-0 left-0 bg-diu-secondary text-white text-xs font-bold px-3 py-1 uppercase">Workshop</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start mb-3">
+                            <div class="bg-gray-100 text-center px-2 py-1 rounded mr-3 min-w-[50px]">
+                                <span class="block text-xs font-bold text-gray-500">OCT</span>
+                                <span class="block text-xl font-bold text-diu-primary">15</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 leading-tight hover:text-diu-primary cursor-pointer">Introduction to React.js & Modern UI</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">Learn the fundamentals of component-based architecture.</p>
+                        <div class="text-xs text-gray-500 border-t pt-3 flex justify-between">
+                            <span><i class="far fa-clock mr-1"></i> 2:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt mr-1"></i> Lab 404</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card event-item" data-category="seminar">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1475721027767-f4240295581b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-48 object-cover">
+                        <div class="absolute bottom-0 left-0 bg-diu-primary text-white text-xs font-bold px-3 py-1 uppercase">Seminar</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start mb-3">
+                            <div class="bg-gray-100 text-center px-2 py-1 rounded mr-3 min-w-[50px]">
+                                <span class="block text-xs font-bold text-gray-500">OCT</span>
+                                <span class="block text-xl font-bold text-diu-primary">22</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 leading-tight hover:text-diu-primary cursor-pointer">Cyber Security in 2025</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">A deep dive into network security with industry experts.</p>
+                        <div class="text-xs text-gray-500 border-t pt-3 flex justify-between">
+                            <span><i class="far fa-clock mr-1"></i> 11:00 AM</span>
+                            <span><i class="fas fa-map-marker-alt mr-1"></i> Auditorium</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card event-item" data-category="social">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1511882150382-421056c89033?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-48 object-cover">
+                        <div class="absolute bottom-0 left-0 bg-purple-600 text-white text-xs font-bold px-3 py-1 uppercase">Social</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-start mb-3">
+                            <div class="bg-gray-100 text-center px-2 py-1 rounded mr-3 min-w-[50px]">
+                                <span class="block text-xs font-bold text-gray-500">NOV</span>
+                                <span class="block text-xl font-bold text-diu-primary">05</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 leading-tight hover:text-diu-primary cursor-pointer">Fall Gaming Fest</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">FIFA and Valorant tournament for all students.</p>
+                        <div class="text-xs text-gray-500 border-t pt-3 flex justify-between">
+                            <span><i class="far fa-clock mr-1"></i> 10:00 AM</span>
+                            <span><i class="fas fa-map-marker-alt mr-1"></i> Student Lounge</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="members" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">Become a Member</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-8 border border-gray-200 shadow-sm">
+                        <h3 class="text-xl font-bold text-diu-primary mb-6">Registration Form</h3>
+                        <form id="joinForm" novalidate>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" id="fullName" class="form-input" placeholder="e.g. John Doe">
+                                    <p class="error-message">Name is required</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Student ID</label>
+                                    <input type="number" id="studentId" class="form-input" placeholder="e.g. 1912345">
+                                    <p class="error-message">Valid ID required</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                                    <input type="email" id="email" class="form-input" placeholder="e.g. email@diu.edu.bd">
+                                    <p class="error-message">Valid email required</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+                                    <input type="text" id="phone" class="form-input" placeholder="+880...">
+                                    <p class="error-message">Phone required</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Select Department</label>
+                                <select id="dept" class="form-input">
+                                    <option value="">-- Select --</option>
+                                    <option value="cis">CIS</option>
+                                    <option value="swe">SWE</option>
+                                    <option value="cse">CSE</option>
+                                </select>
+                                <p class="error-message">Department required</p>
+                            </div>
+
+                            <div class="mb-6">
+                                <span class="block text-sm font-semibold text-gray-700 mb-2">Interests</span>
+                                <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                                    <label class="flex items-center"><input type="checkbox" name="interests" class="mr-2"> Web Development</label>
+                                    <label class="flex items-center"><input type="checkbox" name="interests" class="mr-2"> Cyber Security</label>
+                                    <label class="flex items-center"><input type="checkbox" name="interests" class="mr-2"> AI / ML</label>
+                                </div>
+                                <p id="interest-error" class="error-message">Select at least one</p>
+                            </div>
+
+                            <button type="submit" class="bg-diu-primary hover:bg-green-800 text-white font-bold py-3 px-8 rounded uppercase text-sm w-full md:w-auto transition">Submit Application</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 border border-gray-200 h-fit">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Why Join?</h3>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Priority Access to Workshops</li>
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Industry Mentorship</li>
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Certification for Participation</li>
+                        <li class="flex items-start"><i class="fas fa-check text-diu-secondary mt-1 mr-2"></i> Exclusive Club Merchandise</li>
+                    </ul>
+                    <div class="mt-6 bg-diu-primary text-white p-4 text-center rounded">
+                        <span class="block text-sm opacity-80">Membership Fee</span>
+                        100 BDT</span>
+                        <span class="block text-xs opacity-80">Per Semester</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">Student Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 border border-gray-200 hover:border-diu-secondary transition group">
+                    <i class="fas fa-file-pdf text-4xl text-red-500 mb-4 group-hover:scale-110 transition duration-300"></i>
+                    <h3 class="font-bold text-lg mb-2">Academic Calendar</h3>
+                    <p class="text-gray-600 text-sm mb-4">Official DIU academic calendar for Fall 2025.</p>
+                    <a href="#" class="text-diu-primary font-bold text-sm hover:underline">Download PDF</a>
+                </div>
+                 <div class="bg-white p-6 border border-gray-200 hover:border-diu-secondary transition group">
+                    <i class="fab fa-github text-4xl text-gray-800 mb-4 group-hover:scale-110 transition duration-300"></i>
+                    <h3 class="font-bold text-lg mb-2">Project Repository</h3>
+                    <p class="text-gray-600 text-sm mb-4">Source code for past club projects and hackathon winners.</p>
+                    <a href="#" class="text-diu-primary font-bold text-sm hover:underline">Visit GitHub</a>
+                </div>
+                 <div class="bg-white p-6 border border-gray-200 hover:border-diu-secondary transition group">
+                    <i class="fas fa-video text-4xl text-blue-500 mb-4 group-hover:scale-110 transition duration-300"></i>
+                    <h3 class="font-bold text-lg mb-2">Workshop Recordings</h3>
+                    <p class="text-gray-600 text-sm mb-4">Missed a session? Watch recorded workshops here.</p>
+                    <a href="#" class="text-diu-primary font-bold text-sm hover:underline">Watch Now</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">Photo Gallery</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition" onclick="openModal(this)">
+                    <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                </div>
+                <div class="cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition" onclick="openModal(this)">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                </div>
+                <div class="cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition" onclick="openModal(this)">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                </div>
+                <div class="cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition" onclick="openModal(this)">
+                    <img src="https://images.unsplash.com/photo-1531498860502-7c67cf02f657?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                </div>
+                <div class="cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition" onclick="openModal(this)">
+                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                </div>
+                <div class="cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition" onclick="openModal(this)">
+                    <img src="https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover hover:scale-110 transition duration-500">
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="page-section hidden container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 section-title">Contact Us</h2>
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/3 bg-diu-primary text-white p-8 rounded-sm">
+                    <h3 class="text-xl font-bold mb-6">Get In Touch</h3>
+                    <div class="space-y-4 text-sm">
+                        <p><i class="fas fa-map-marker-alt mr-3 w-5"></i> Daffodil Smart City, Ashulia, Dhaka</p>
+                        <p><i class="fas fa-phone mr-3 w-5"></i> +88 09617901212</p>
+                        <p><i class="fas fa-envelope mr-3 w-5"></i> cisclub@diu.edu.bd</p>
+                    </div>
+                    <div class="mt-8">
+                        <h4 class="font-bold mb-3">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-facebook-f text-lg"></i></a>
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-twitter text-lg"></i></a>
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-instagram text-lg"></i></a>
+                            <a href="#" class="hover:text-diu-secondary"><i class="fab fa-linkedin-in text-lg"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-2/3 bg-white border border-gray-200 p-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Send a Message</h3>
+                    <form id="contactForm" novalidate>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div>
+                                <input type="text" id="contactName" class="form-input" placeholder="Your Name">
+                                <p class="error-message">Required</p>
+                            </div>
+                            <div>
+                                <input type="email" id="contactEmail" class="form-input" placeholder="Email Address">
+                                <p class="error-message">Required</p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <textarea id="contactMessage" rows="4" class="form-input" placeholder="Write your message..."></textarea>
+                            <p class="error-message">Required</p>
+                        </div>
+                        <button type="submit" class="bg-gray-800 hover:bg-diu-primary text-white font-bold py-3 px-8 rounded uppercase text-sm transition">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#1b1b1b] text-gray-300 py-12 mt-auto text-sm">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">About DIU</h4>
+                <p class="leading-relaxed mb-4">Daffodil International University is a top-ranking private university in Bangladesh. The CIS Club represents the Department of Computing and Information System.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-diu-secondary transition">Apply Online</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Student Portal</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Faculty Members</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Notice Board</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">Important Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-diu-secondary transition">Convocation</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Career Services</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Library</a></li>
+                    <li><a href="#" class="hover:text-diu-secondary transition">Alumni Association</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4 uppercase">Contact</h4>
+                <p class="mb-2">Daffodil Smart City, Ashulia, Dhaka, Bangladesh.</p>
+                <p class="mb-2">Phone: +88 09617901212</p>
+                <p>Email: info@daffodilvarsity.edu.bd</p>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-xs">
+            <p>&copy; 2025 Daffodil International University | CIS Department. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <button id="scrollTopBtn" class="fixed bottom-6 right-6 bg-diu-primary text-white p-3 rounded shadow hover:bg-green-800 hidden transition z-40">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <div id="toast">Operation Successful</div>
+
+    <div id="gallery-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+        <img id="modal-image" src="" class="max-w-full max-h-[90vh]">
+    </div>
+
+    <div id="email-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full text-center shadow-2xl animate-bounce-in">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-envelope-open-text text-4xl text-green-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Registration Successful!</h3>
+            <p class="text-gray-600 mb-6">We've sent a verification link to your email address. Please check your inbox to activate your account.</p>
+            <button onclick="closeModal()" class="bg-diu-primary text-white px-6 py-2 rounded font-bold hover:bg-green-700 w-full transition">Got it</button>
+        </div>
+    </div>
+
+    <script>
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSignupFields(); // Set default fields for auth form
+            navigateTo('home'); // Start on home page
+            initSlider(); // Initialize slider
+        });
+
+        // --- NAVIGATION LOGIC (From both files) ---
+        function navigateTo(id) {
+            // Hide all page sections
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.remove('active');
+                el.classList.add('hidden');
+            });
+            
+            // Show target section
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('active');
+            }
+            
+            // Update active nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.textContent.toLowerCase().includes(id) || 
+                    (link.getAttribute('onclick') && link.getAttribute('onclick').includes(id))) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Close mobile menu
+            document.getElementById('mobile-menu').classList.add('hidden');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // --- MOBILE MENU (From second file) ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Mobile menu button (from first file)
+        document.getElementById('mobile-menu-btn').onclick = () => {
+            toggleMobileMenu();
+        };
+
+        // --- SLIDER LOGIC (From first file) ---
+        function initSlider() {
+            let slideIndex = 0;
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length > 0) {
+                setInterval(() => {
+                    slides[slideIndex].classList.remove('active');
+                    slideIndex = (slideIndex + 1) % slides.length;
+                    slides[slideIndex].classList.add('active');
+                }, 5000);
+            }
+        }
+
+        // --- FILTER LOGIC (From first file) ---
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-diu-primary', 'text-white');
+                    b.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                btn.classList.remove('bg-gray-200', 'text-gray-700');
+                btn.classList.add('bg-diu-primary', 'text-white');
+                
+                const filter = btn.dataset.filter;
+                document.querySelectorAll('.event-item').forEach(item => {
+                    item.style.display = (filter === 'all' || item.dataset.category === filter) ? 'block' : 'none';
+                });
+            };
+        });
+
+        // --- FORM VALIDATION (From first file) ---
+        function validate(formId) {
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('input, textarea, select');
+            let valid = true;
+            
+            inputs.forEach(input => {
+                const error = input.nextElementSibling;
+                if (!input.value.trim() || (input.type === 'email' && !input.value.includes('@'))) {
+                    input.classList.add('invalid');
+                    if (error) error.style.display = 'block';
+                    valid = false;
+                } else {
+                    input.classList.remove('invalid');
+                    if (error) error.style.display = 'none';
+                }
+            });
+
+            // Checkbox logic for join form
+            if (formId === 'joinForm') {
+                const checked = form.querySelectorAll('input[name="interests"]:checked');
+                const err = document.getElementById('interest-error');
+                if (checked.length === 0) {
+                    err.style.display = 'block';
+                    valid = false;
+                } else {
+                    err.style.display = 'none';
+                }
+            }
+
+            return valid;
+        }
+
+        // Join form submission (from first file)
+        document.getElementById('joinForm').onsubmit = (e) => {
+            e.preventDefault();
+            if (validate('joinForm')) showToast('Application Submitted!');
+        };
+
+        // Contact form submission (from first file)
+        document.getElementById('contactForm').onsubmit = (e) => {
+            e.preventDefault();
+            if (validate('contactForm')) showToast('Message Sent!');
+        };
+
+        // --- AUTH SYSTEM (From second file) ---
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form-container');
+            const signupForm = document.getElementById('signup-form-container');
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                tabLogin.classList.add('active');
+                tabSignup.classList.remove('active');
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                tabLogin.classList.remove('active');
+                tabSignup.classList.add('active');
+            }
+        }
+
+        // UPDATED FUNCTION WITH REQUESTED CHANGES
+        function updateSignupFields() {
+            const container = document.getElementById('dynamic-fields');
+            const userType = document.querySelector('input[name="userType"]:checked').value;
+
+            let html = '';
+
+            if (userType === 'cis') {
+                // CIS Department: Student ID + CIS Batch (11-24)
+                html = `
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Student ID <span class="text-red-500">*</span></label>
+                        <input type="text" class="form-input" placeholder="e.g. 211-15-1234" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">CIS Batch <span class="text-red-500">*</span></label>
+                        <select class="form-input" required>
+                            <option value="">-- Select Batch --</option>
+                            <option value="11">Batch 11</option>
+                            <option value="12">Batch 12</option>
+                            <option value="13">Batch 13</option>
+                            <option value="14">Batch 14</option>
+                            <option value="15">Batch 15</option>
+                            <option value="16">Batch 16</option>
+                            <option value="17">Batch 17</option>
+                            <option value="18">Batch 18</option>
+                            <option value="19">Batch 19</option>
+                            <option value="20">Batch 20</option>
+                            <option value="21">Batch 21</option>
+                            <option value="22">Batch 22</option>
+                            <option value="23">Batch 23</option>
+                            <option value="24">Batch 24</option>
+                        </select>
+                    </div>
+                `;
+            } else if (userType === 'diu_other') {
+                // Other DIU Department: Department Name + Student ID + Semester (1-12)
+                html = `
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Department Name <span class="text-red-500">*</span></label>
+                        <input type="text" class="form-input" placeholder="e.g. SWE, CSE, EEE" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Student ID <span class="text-red-500">*</span></label>
+                        <input type="text" class="form-input" placeholder="DIU ID" required>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Semester <span class="text-red-500">*</span></label>
+                        <select class="form-input" required>
+                            <option value="">-- Select Semester --</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                            <option value="3">3rd Semester</option>
+                            <option value="4">4th Semester</option>
+                            <option value="5">5th Semester</option>
+                            <option value="6">6th Semester</option>
+                            <option value="7">7th Semester</option>
+                            <option value="8">8th Semester</option>
+                            <option value="9">9th Semester</option>
+                            <option value="10">10th Semester</option>
+                            <option value="11">11th Semester</option>
+                            <option value="12">12th Semester</option>
+                        </select>
+                    </div>
+                `;
+            } else {
+                // Outside DIU: Institution + Department
+                html = `
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Institution / Organization <span class="text-red-500">*</span></label>
+                        <input type="text" class="form-input" placeholder="University or Company name" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Department <span class="text-red-500">*</span></label>
+                        <input type="text" class="form-input" placeholder="Your Department" required>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+
+            if (email && pass) {
+                // Simulate successful login
+                document.getElementById('logged-out-view').classList.add('hidden');
+                document.getElementById('logged-in-view').classList.remove('hidden');
+                document.getElementById('mobile-auth-btn').classList.add('hidden');
+                document.getElementById('mobile-logout-btn').classList.remove('hidden');
+                document.getElementById('nav-user-name').innerText = email.split('@')[0];
+                showToast('Login successful!');
+                navigateTo('home');
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const p1 = document.getElementById('regPass').value;
+            const p2 = document.getElementById('regConfirmPass').value;
+
+            if (p1 !== p2) {
+                document.getElementById('pass-error').style.display = 'block';
+                return;
+            }
+            document.getElementById('pass-error').style.display = 'none';
+            
+            // Show success modal
+            document.getElementById('email-modal').classList.remove('hidden');
+        }
+
+        function logout() {
+            document.getElementById('logged-out-view').classList.remove('hidden');
+            document.getElementById('logged-in-view').classList.add('hidden');
+            document.getElementById('mobile-auth-btn').classList.remove('hidden');
+            document.getElementById('mobile-logout-btn').classList.add('hidden');
+            showToast('Logged out successfully');
+            navigateTo('home');
+        }
+
+        function closeModal() {
+            document.getElementById('email-modal').classList.add('hidden');
+            navigateTo('home');
+        }
+
+        // --- TOAST NOTIFICATION (From first file) ---
+        function showToast(msg) {
+            const x = document.getElementById("toast");
+            x.innerText = msg;
+            x.className = "show";
+            setTimeout(function() { 
+                x.className = x.className.replace("show", ""); 
+            }, 3000);
+        }
+
+        // --- SCROLL TOP BUTTON (From first file) ---
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        window.onscroll = () => {
+            scrollBtn.style.display = (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) ? 'block' : 'none';
+        };
+        scrollBtn.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+
+        // --- GALLERY MODAL (From first file) ---
+        window.openModal = (el) => {
+            document.getElementById('modal-image').src = el.querySelector('img').src;
+            document.getElementById('gallery-modal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHMAD 024</title>
+    <style>
+        .outer-border {
+            border: 1px solid black;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="outer-border">
+        <h1>Registration form</h1>
+
+        <form>
+            <fieldset>
+                <legend>User personal information</legend>
+
+                <div class="form-line">
+                    <label for="fullname">Enter your full name</label><br>
+                    <input type="text" id="fullname" name="fullname">
+                </div>
+                
+                <div class="form-line">
+                    <label for="email">Enter your email</label><br>
+                    <input type="text" id="email" name="email">
+                </div>
+                
+                <div class="form-line">
+                    <label for="password">Enter your password</label><br>
+                    <input type="password" id="password" name="password">
+                </div>
+                
+                <div class="form-line">
+                    <label for="confirm_password">confirm your password</label><br>
+                    <input type="password" id="confirm_password" name="confirm_password">
+                </div>
+
+                <div class="form-line gender-group">
+                    <p>Enter your gender</p>
+                    <label>
+                        <input type="radio" name="gender" value="male" checked> Male
+                    </label><br>
+                    <label>
+                        <input type="radio" name="gender" value="female"> Female
+                    </label><br>
+                    <label>
+                        <input type="radio" name="gender" value="others"> others
+                    </label>
+                </div>
+                
+
+            <div class="form-line">
+                <label for="address">Enter your Address:</label><br>
+                <textarea id="address" name="address"></textarea>
+            </div>
+            
+            <input type="submit" value="sign-up">
+        </fieldset>
+
+        </form>
+    </div>
+
+</body>
+</html>

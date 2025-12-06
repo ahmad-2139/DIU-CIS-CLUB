@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIU CIS Club - Achievements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the light green color grading effect */
+        .image-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem; /* Rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        /* The light green overlay */
+        .green-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: #4ade80; /* Tailwind green-400 */
+            opacity: 0.25; /* Adjust opacity to control intensity of the green tint */
+            mix-blend-mode: multiply; /* Blends the green into the image underneath */
+            transition: opacity 0.3s ease;
+        }
+
+        /* Hover effect: slight zoom and brighten the image */
+        .image-wrapper:hover img {
+            transform: scale(1.03);
+        }
+        .image-wrapper:hover .green-overlay {
+            opacity: 0.15; /* Lighten the grade on hover for effect */
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Very light gray background */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-green-50 py-16 text-center px-4">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-green-900 tracking-tight mb-4">
+                DIU CIS Club <span class="text-green-600">Hall of Fame</span>
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Celebrating innovation, leadership, and technical excellence within our community.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-20">
+
+        <section class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="order-2 md:order-1 space-y-6">
+                <span class="inline-block py-1 px-3 rounded-full bg-green-100 text-green-800 text-sm font-semibold tracking-wide uppercase">
+                    Community Leadership
+                </span>
+                <h2 class="text-3xl font-bold text-gray-900">3rd Place: Summer 2025 Club Enrollment Campaign</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    The CIS Club demonstrated exceptional organizational prowess and community outreach during the Summer 2025 enrollment drive. Through strategic planning and enthusiastic engagement, the team secured the 3rd position overall, significantly expanding our member base and fostering a vibrant tech community on campus.
+                </p>
+            </div>
+            <div class="order-1 md:order-2">
+                <div class="image-wrapper h-64 md:h-80">
+                    <img src="award1.jpg" alt="Club Enrollment Campaign Award Ceremony">
+                    <div class="green-overlay"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid md:grid-cols-2 gap-10 items-center">
+             <div class="order-1">
+                <div class="image-wrapper h-64 md:h-80">
+                    <img src="award2.jpg" alt="AI Project Competition Award">
+                    <div class="green-overlay"></div>
+                </div>
+            </div>
+            <div class="order-2 space-y-6">
+                 <span class="inline-block py-1 px-3 rounded-full bg-green-100 text-green-800 text-sm font-semibold tracking-wide uppercase">
+                    Technical Innovation
+                </span>
+                <h2 class="text-3xl font-bold text-gray-900">2nd Runner-Up: 4th Data Science Summit</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    Our talented team showcased their technical expertise in artificial intelligence at the prestigious 4th Data Science Summit AI Project Competition. Their innovative project secured the 2nd Runner-Up position among stiff competition, highlighting the department's strength in cutting-edge technology and problem-solving.
+                </p>
+            </div>
+        </section>
+
+        <section class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="order-2 md:order-1 space-y-6">
+                 <span class="inline-block py-1 px-3 rounded-full bg-green-100 text-green-800 text-sm font-semibold tracking-wide uppercase">
+                    Individual Brilliance & IoT
+                </span>
+                <h2 class="text-3xl font-bold text-gray-900">Innovation in Public Safety: Metro Rail Monitoring System</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    CIS student Iran Sardar has developed a groundbreaking 'Metro Rail Bearing Pad Safety Monitoring System'. Utilizing advanced IoT sensors and robotics, this proactive solution instantly detects structural deviations or vibrations in bearing pads. The system triggers real-time alarms and alerts control rooms to prevent potential accidents, significantly enhancing national infrastructure safety for passengers.
+                </p>
+            </div>
+            <div class="order-1 md:order-2">
+                <div class="image-wrapper h-64 md:h-96">
+                    <img src="award3.jpg" alt="Iran Sardar with Metro Rail Safety Project">
+                    <div class="green-overlay"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-green-900 text-green-50 py-8 text-center mt-12">
+        <p>© 2025 Daffodil International University CIS Club. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

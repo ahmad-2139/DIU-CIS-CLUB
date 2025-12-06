@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS Club Sections</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GLOBAL RESETS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
+
+        :root {
+            --primary-teal: #135D66; /* Dark Teal for buttons/icons */
+            --dark-teal-bg: #0B4A53; /* Background for top section */
+            --cream-bg: #EBE3C8;     /* Beige background */
+            --text-dark: #1f1f1f;
+            --text-light: #ffffff;
+            --accent-gold: #D4AF37;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- SECTION 1: OUR IMPACT --- */
+        .impact-section {
+            background-color: var(--dark-teal-bg);
+            /* Optional: Add your forest image url below inside url('') */
+            background-image: linear-gradient(rgba(11, 74, 83, 0.9), rgba(11, 74, 83, 0.8)), url(img.jpeg); 
+            background-size: cover;
+            background-position: center;
+            color: var(--text-light);
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .impact-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #EBE3C8; /* Slight cream tint for title */
+            margin-bottom: 10px;
+        }
+
+        .impact-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 60px;
+            font-weight: 300;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .impact-card {
+            background-color: #F3EACF; /* Light cream card */
+            color: var(--text-dark);
+            padding: 40px 30px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .impact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Decorative circle in card corner */
+        .impact-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            width: 100px;
+            height: 100px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* Slight rotation for the 4th card icon based on image */
+        .impact-card:nth-child(4) .icon-box {
+            transform: rotate(-5deg);
+        }
+
+        .counter-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            line-height: 1.2;
+            display: block;
+        }
+
+        .counter-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #444;
+        }
+
+        /* --- SECTION 2: WHY JOIN CIS CLUB --- */
+        .mission-section {
+            background-color: var(--cream-bg);
+            padding: 100px 0;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        /* Top right accent line */
+        .mission-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 10%;
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-teal), var(--accent-gold));
+        }
+
+        .mission-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: flex-start;
+        }
+
+        /* Left Column Styling */
+        .mission-tag {
+            background-color: #2F5D66;
+            color: white;
+            padding: 8px 16px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+
+        .mission-heading {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            font-weight: 800;
+            margin-bottom: 30px;
+            color: #111;
+        }
+
+        /* Gradient Text for "CIS Club?" */
+        .highlight-text {
+            background: linear-gradient(90deg, #135D66, #9C8230);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .mission-desc {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            max-width: 90%;
+            color: #333;
+        }
+
+        .btn-primary {
+            background-color: #2F5D66;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a3c42;
+        }
+
+        /* Right Column Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 40px;
+            row-gap: 50px;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .feature-icon-gradient {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2F5D66, #C5A026);
+            margin-bottom: 10px;
+        }
+        
+        /* Specific rotation for the 4th icon similar to screenshot */
+        .feature-item:nth-child(2) .feature-icon-gradient {
+             transform: rotate(-3deg);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .feature-text {
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        /* Faint circle decoration bottom left */
+        .circle-decor {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            width: 150px;
+            height: 150px;
+            background-color: rgba(212, 175, 55, 0.1); /* Gold tint */
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .mission-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .mission-heading {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .impact-title {
+                font-size: 2rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="impact-section">
+        <div class="container">
+            <h2 class="impact-title">Our Impact</h2>
+            <p class="impact-subtitle">Display key metrics in animated counters</p>
+
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-user-group"></i>
+                    </div>
+                    <span class="counter-number">500+</span>
+                    <span class="counter-label">Active Members</span>
+                </div>
+
+                <div class="impact-card">
+                    <div class="icon-box">
+                        <i class="fa-regular fa-calendar"></i>
+                    </div>
+                    <span class="counter-number">100+</span>
+                    <span class="counter-label">Events Hosted</span>
+                </div>
+
+                <div class="impact-card">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="counter-number">100+</span>
+                    <span class="counter-label">Projects Completed</span>
+                </div>
+
+                <div class="impact-card">
+                    <div class="icon-box">
+                        <i class="fa-regular fa-building"></i>
+                    </div>
+                    <span class="counter-number">30+</span>
+                    <span class="counter-label">Industry Partners</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mission-section">
+        <div class="circle-decor"></div>
+
+        <div class="container">
+            <div class="mission-content">
+                
+                <div class="mission-text">
+                    <div class="mission-tag">OUR MISSION</div>
+                    <h2 class="mission-heading">Why You Should Join <span class="highlight-text">CIS Club?</span></h2>
+                    <p class="mission-desc">
+                        Brief mission statement highlighting community, learning opportunities, networking, and skill development.
+                    </p>
+                    <a href="#" class="btn-primary">Become a Member <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+
+                <div class="features-grid">
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon-gradient"></div>
+                        <h3 class="feature-title">Technical Workshops</h3>
+                        <p class="feature-text">Hands-on learning sessions covering the latest technologies, programming languages, and industry best practices.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon-gradient" style="transform: rotate(4deg);"></div> <h3 class="feature-title">Networking Events</h3>
+                        <p class="feature-text">Connect with peers, alumni, and industry professionals to build lasting relationships and expand your network.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon-gradient"></div>
+                        <h3 class="feature-title">Career Support</h3>
+                        <p class="feature-text">Get guidance on internships, job opportunities, resume reviews, and interview preparation from experienced mentors.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon-gradient"></div>
+                        <h3 class="feature-title">Project Collaboration</h3>
+                        <p class="feature-text">Work on real-world projects with fellow members, building your portfolio while solving meaningful problems.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

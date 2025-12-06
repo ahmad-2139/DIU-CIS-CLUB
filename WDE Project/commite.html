@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS Club - Daffodil International University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        diu: {
+                            primary: '#006a4e',
+                            secondary: '#f7941d',
+                            dark: '#1b1b1b',
+                            light: '#f4f4f4',
+                            accent: '#e6f0ed'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- CUSTOM STYLES --- */
+        body {
+            background-color: #f9f9f9;
+            scroll-behavior: smooth;
+        }
+
+        /* Top Bar Styling */
+        .top-bar {
+            background-color: #006a4e;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        /* Navigation Active State */
+        .nav-link.active {
+            color: #f7941d;
+            font-weight: 600;
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 50;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+        /* Scroll Top Button */
+        #scrollTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 18px;
+            border: none;
+            outline: none;
+            background-color: #f7941d;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #d87e10;
+        }
+
+        /* Committee Card Hover Effect */
+        .committee-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .committee-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-gray-800">
+
+    <!-- Top Bar -->
+    <div class="top-bar py-2 px-4 hidden md:block">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <span><i class="fas fa-envelope mr-2"></i>info@cisclub.diu.edu.bd</span>
+                <span><i class="fas fa-phone mr-2"></i>+880 1234 567890</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="hover:text-diu-secondary"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="hover:text-diu-secondary"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#" class="hover:text-diu-secondary"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="w-10 h-10 bg-diu-primary rounded-full flex items-center justify-center text-white font-bold text-xl">
+                        CIS
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-diu-primary leading-tight">CIS CLUB</h1>
+                        <p class="text-xs text-gray-500 font-medium">DAFFODIL INTERNATIONAL UNIVERSITY</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" onclick="navigateTo('home')" class="nav-link font-medium hover:text-diu-primary transition">Home</a>
+                    <a href="#" onclick="navigateTo('about')" class="nav-link font-medium hover:text-diu-primary transition">About</a>
+                    <a href="#" onclick="navigateTo('committee')" class="nav-link font-medium hover:text-diu-primary transition text-diu-primary">Committee</a>
+                    <a href="#" onclick="navigateTo('events')" class="nav-link font-medium hover:text-diu-primary transition">Events</a>
+                    <a href="#" onclick="navigateTo('gallery')" class="nav-link font-medium hover:text-diu-primary transition">Gallery</a>
+                    <a href="#" onclick="navigateTo('contact')" class="nav-link font-medium hover:text-diu-primary transition">Contact</a>
+                    
+                    <button id="auth-btn" onclick="openAuthModal()" class="bg-diu-primary hover:bg-green-800 text-white px-5 py-2 rounded-full font-medium transition shadow-md">
+                        Login
+                    </button>
+                    <button id="logout-btn" onclick="handleLogout()" class="hidden bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-full font-medium transition shadow-md">
+                        Logout
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden text-gray-700 focus:outline-none" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 p-4">
+            <div class="flex flex-col space-y-3">
+                <a href="#" onclick="navigateTo('home')" class="block py-2 px-4 hover:bg-gray-50 rounded">Home</a>
+                <a href="#" onclick="navigateTo('about')" class="block py-2 px-4 hover:bg-gray-50 rounded">About</a>
+                <a href="#" onclick="navigateTo('committee')" class="block py-2 px-4 hover:bg-gray-50 rounded text-diu-primary font-bold">Committee</a>
+                <a href="#" onclick="navigateTo('events')" class="block py-2 px-4 hover:bg-gray-50 rounded">Events</a>
+                <a href="#" onclick="navigateTo('gallery')" class="block py-2 px-4 hover:bg-gray-50 rounded">Gallery</a>
+                <a href="#" onclick="navigateTo('contact')" class="block py-2 px-4 hover:bg-gray-50 rounded">Contact</a>
+                <div class="pt-2 border-t border-gray-100">
+                    <button id="mobile-auth-btn" onclick="openAuthModal()" class="w-full bg-diu-primary text-white py-2 rounded font-medium">Login</button>
+                    <button id="mobile-logout-btn" onclick="handleLogout()" class="hidden w-full bg-red-500 text-white py-2 rounded font-medium">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="flex-grow">
+        
+        <!-- HOME SECTION -->
+        <section id="home-view" class="view-section">
+            <!-- Hero Section -->
+            <div class="relative bg-diu-dark text-white overflow-hidden">
+                <div class="absolute inset-0 bg-opacity-60 bg-black z-0"></div>
+                <!-- Abstract Background SVG -->
+                <div class="absolute inset-0 opacity-20 z-0">
+                    <svg viewBox="0 0 1440 320" class="w-full h-full object-cover">
+                        <path fill="#006a4e" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,197.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                    </svg>
+                </div>
+
+                <div class="container mx-auto px-4 py-24 md:py-32 relative z-10 text-center">
+                    <span class="inline-block py-1 px-3 rounded-full bg-diu-secondary text-white text-sm font-bold mb-4 animate-bounce">WELCOME TO</span>
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">Computing & Information System <br><span class="text-diu-secondary">Club</span></h1>
+                    <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+                        Empowering students through technology, innovation, and leadership. Join us to shape the future of computing.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button onclick="navigateTo('auth-modal')" class="bg-diu-primary hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg">
+                            Join The Club
+                        </button>
+                        <button onclick="navigateTo('committee')" class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-diu-dark font-bold py-3 px-8 rounded-full transition">
+                            Meet Our Team
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="py-16 bg-white">
+                <div class="container mx-auto px-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-gray-50 p-8 rounded-xl border border-gray-100 hover:shadow-lg transition text-center">
+                            <div class="w-16 h-16 bg-diu-accent rounded-full flex items-center justify-center text-diu-primary text-2xl mx-auto mb-4">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Skill Development</h3>
+                            <p class="text-gray-600">Regular workshops on programming, web development, and emerging technologies.</p>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl border border-gray-100 hover:shadow-lg transition text-center">
+                            <div class="w-16 h-16 bg-diu-accent rounded-full flex items-center justify-center text-diu-primary text-2xl mx-auto mb-4">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Networking</h3>
+                            <p class="text-gray-600">Connect with industry professionals, alumni, and fellow tech enthusiasts.</p>
+                        </div>
+                        <div class="bg-gray-50 p-8 rounded-xl border border-gray-100 hover:shadow-lg transition text-center">
+                            <div class="w-16 h-16 bg-diu-accent rounded-full flex items-center justify-center text-diu-primary text-2xl mx-auto mb-4">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3">Competitions</h3>
+                            <p class="text-gray-600">Participate in hackathons, coding contests, and project showcases.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section id="about-view" class="view-section hidden">
+            <div class="bg-diu-primary text-white py-16">
+                <div class="container mx-auto px-4 text-center">
+                    <h1 class="text-4xl font-bold mb-4">About Us</h1>
+                    <p class="text-xl opacity-90">Learn about our mission, vision, and history.</p>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 py-16">
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="md:w-1/2">
+                        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80" alt="About CIS Club" class="rounded-lg shadow-xl">
+                    </div>
+                    <div class="md:w-1/2">
+                        <h2 class="text-3xl font-bold text-diu-primary mb-6">Who We Are</h2>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            The CIS Club at Daffodil International University is a premier student organization dedicated to fostering a culture of technological innovation and leadership. We bridge the gap between academic learning and industry requirements.
+                        </p>
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            Established with the vision to create a collaborative environment, we organize various events, seminars, and workshops throughout the year.
+                        </p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center text-gray-700">
+                                <i class="fas fa-check-circle text-diu-secondary mr-3"></i> Student-led initiatives
+                            </li>
+                            <li class="flex items-center text-gray-700">
+                                <i class="fas fa-check-circle text-diu-secondary mr-3"></i> Industry collaboration
+                            </li>
+                            <li class="flex items-center text-gray-700">
+                                <i class="fas fa-check-circle text-diu-secondary mr-3"></i> Community support
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMITTEE SECTION (NEW) -->
+        <section id="committee-view" class="view-section hidden">
+            <!-- Header -->
+            <div class="bg-gray-900 text-white py-16 relative overflow-hidden">
+                <div class="absolute inset-0 bg-diu-primary opacity-90"></div>
+                <div class="container mx-auto px-4 text-center relative z-10">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Executive Committee</h1>
+                    <p class="text-xl text-gray-200">Meet the leaders driving our vision forward</p>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-16 space-y-20">
+                
+                <!-- Helper for Image Fallback -->
+                <script>
+                    function imgError(image) {
+                        // Fallback to a placeholder if the local file isn't found
+                        image.onerror = "";
+                        image.src = "https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=User&size=200"; 
+                        // Or a generic silhouette
+                        // image.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+                    }
+                </script>
+
+                <!-- Template Variable for the Image Source -->
+                <!-- You can replace 'IMG-20251203-WA0023.jpg' with your actual image paths later -->
+
+                <!-- LEVEL I: Advisory and Convener Panel -->
+                <div class="committee-group">
+                    <div class="flex items-center justify-center mb-10">
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mx-4 text-center">Advisory & Convener Panel</h2>
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-8">
+                        <!-- Card 1 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                            <div class="p-4 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Md. Sarwar Hossain Mollah" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h3 class="text-lg font-bold text-diu-dark mb-1">Md. Sarwar Hossain Mollah</h3>
+                                <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Advisor</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                            <div class="p-4 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Md. Mehedi Hassan" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h3 class="text-lg font-bold text-diu-dark mb-1">Md. Mehedi Hassan</h3>
+                                <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Advisor</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                            <div class="p-4 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Mr. Israfil" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h3 class="text-lg font-bold text-diu-dark mb-1">Mr. Israfil</h3>
+                                <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Convener</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                            <div class="p-4 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Tamanna Akter" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h3 class="text-lg font-bold text-diu-dark mb-1">Tamanna Akter</h3>
+                                <p class="text-diu-primary font-medium text-sm uppercase tracking-wide">Co-Convener</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEVEL II: Executive Leadership -->
+                <div class="committee-group">
+                    <div class="flex items-center justify-center mb-10">
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mx-4 text-center">Executive Leadership</h2>
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-8">
+                        <!-- President -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-80 border-t-4 border-diu-primary relative transform scale-105 z-10">
+                             <div class="absolute top-0 right-0 bg-diu-primary text-white text-xs px-2 py-1 rounded-bl-lg font-bold">LEADER</div>
+                            <div class="p-4 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Mabia Akonda Jemi" class="w-full h-72 object-cover rounded-lg shadow-sm border border-gray-200">
+                            </div>
+                            <div class="p-6 text-center">
+                                <h3 class="text-xl font-bold text-diu-dark mb-1">Mabia Akonda Jemi</h3>
+                                <p class="text-diu-primary font-bold text-base uppercase tracking-wide">President</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-8 mt-8">
+                        <!-- VP 1 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                            <div class="p-4 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Ariful Haque Piash" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h3 class="text-lg font-bold text-diu-dark mb-1">Ariful Haque Piash</h3>
+                                <p class="text-gray-600 font-medium text-sm uppercase tracking-wide">Vice-President</p>
+                            </div>
+                        </div>
+
+                        <!-- VP 2 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-lg w-72 border border-gray-100">
+                            <div class="p-4 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Shinthiah Islam Ritu" class="w-full h-64 object-cover rounded-lg shadow-sm border border-gray-200">
+                            </div>
+                            <div class="p-5 text-center">
+                                <h3 class="text-lg font-bold text-diu-dark mb-1">Shinthiah Islam Ritu</h3>
+                                <p class="text-gray-600 font-medium text-sm uppercase tracking-wide">Vice-President</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEVEL III: Secretarial / Core Management -->
+                <div class="committee-group">
+                    <div class="flex items-center justify-center mb-10">
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mx-4 text-center">Core Management</h2>
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <!-- General Secretary -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="A.F.M. Shah Arafin Atiq" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="text-md font-bold text-diu-dark mb-1">A.F.M. Shah Arafin Atiq</h3>
+                                <p class="text-gray-500 text-xs font-bold uppercase">General Secretary</p>
+                            </div>
+                        </div>
+
+                         <!-- Treasurer -->
+                         <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Sanjana Noor Disha" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="text-md font-bold text-diu-dark mb-1">Sanjana Noor Disha</h3>
+                                <p class="text-gray-500 text-xs font-bold uppercase">Treasurer</p>
+                            </div>
+                        </div>
+
+                        <!-- Joint Secretary 1 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Samiul Hauque Ann Nahian" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="text-md font-bold text-diu-dark mb-1">Samiul Hauque Ann Nahian</h3>
+                                <p class="text-gray-500 text-xs font-bold uppercase">Joint Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Joint Secretary 2 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Md. Samiul Islam" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="text-md font-bold text-diu-dark mb-1">Md. Samiul Islam</h3>
+                                <p class="text-gray-500 text-xs font-bold uppercase">Joint Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Joint Secretary 3 -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-md w-64 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Shumaia Jaman Shimu" class="w-full h-56 object-cover rounded-lg shadow-sm">
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="text-md font-bold text-diu-dark mb-1">Shumaia Jaman Shimu</h3>
+                                <p class="text-gray-500 text-xs font-bold uppercase">Joint Secretary</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEVEL IV: Organizing and Execution -->
+                <div class="committee-group">
+                    <div class="flex items-center justify-center mb-10">
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-700 mx-4 text-center">Organizing & Execution</h2>
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <!-- Org Sec -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Jobaied Chowdhury Akash" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Jobaied Chowdhury Akash</h3>
+                                <p class="text-diu-primary text-xs mt-1">Organizing Secretary</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Deputy Org Secs -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Nusrat Jahan Jitu" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Nusrat Jahan Jitu</h3>
+                                <p class="text-gray-500 text-xs mt-1">Deputy Organizing Sec.</p>
+                            </div>
+                        </div>
+
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="MD. Mahid Alam Marin" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">MD. Mahid Alam Marin</h3>
+                                <p class="text-gray-500 text-xs mt-1">Deputy Organizing Sec.</p>
+                            </div>
+                        </div>
+
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-60 border border-gray-100">
+                            <div class="p-3 flex justify-center bg-gray-50">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Indrojit Sarkar Pallab" class="w-full h-48 object-cover rounded-lg shadow-sm opacity-90 hover:opacity-100 transition">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Indrojit Sarkar Pallab</h3>
+                                <p class="text-gray-500 text-xs mt-1">Deputy Organizing Sec.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEVEL V: Specialized Secretaries -->
+                <div class="committee-group">
+                    <div class="flex items-center justify-center mb-10">
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-700 mx-4 text-center">Specialized Departments</h2>
+                        <div class="h-1 w-12 bg-diu-secondary rounded"></div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <!-- Media -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Md. Mushfiqul Islam Ruhit" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Md. Mushfiqul Islam Ruhit</h3>
+                                <p class="text-diu-secondary text-xs font-semibold mt-1">Media Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Press -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Md. Jakaria Hossin Fahim" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Md. Jakaria Hossin Fahim</h3>
+                                <p class="text-diu-secondary text-xs font-semibold mt-1">Press Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Public Relations -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Jannatul Ferdous Bony" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Jannatul Ferdous Bony</h3>
+                                <p class="text-diu-secondary text-xs font-semibold mt-1">PR Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Deputy PR -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Md. Shehabaul Alam" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Md. Shehabaul Alam</h3>
+                                <p class="text-gray-500 text-xs mt-1">Deputy PR Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Design -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="T. M. Samin Ur Rahman" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">T. M. Samin Ur Rahman</h3>
+                                <p class="text-diu-secondary text-xs font-semibold mt-1">Design Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Deputy Design -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Golam Rabbi" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Golam Rabbi</h3>
+                                <p class="text-gray-500 text-xs mt-1">Deputy Design Sec.</p>
+                            </div>
+                        </div>
+
+                        <!-- Sports -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Sajjad Hossain" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Sajjad Hossain</h3>
+                                <p class="text-diu-secondary text-xs font-semibold mt-1">Sports Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Cultural -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Tabassum Akter Tasnim" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Tabassum Akter Tasnim</h3>
+                                <p class="text-diu-secondary text-xs font-semibold mt-1">Cultural Secretary</p>
+                            </div>
+                        </div>
+
+                        <!-- Deputy Cultural -->
+                        <div class="committee-card bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md w-56 border border-gray-100">
+                            <div class="p-2 flex justify-center">
+                                <img src="IMG-20251203-WA0023.jpg" onerror="imgError(this)" alt="Md. Abdul Ahad Pranto" class="w-full h-40 object-cover rounded-lg shadow-sm opacity-90">
+                            </div>
+                            <div class="p-3 text-center">
+                                <h3 class="text-sm font-bold text-diu-dark">Md. Abdul Ahad Pranto</h3>
+                                <p class="text-gray-500 text-xs mt-1">Deputy Cultural Sec.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- EVENTS SECTION -->
+        <section id="events-view" class="view-section hidden">
+            <div class="container mx-auto px-4 py-16">
+                <h2 class="text-3xl font-bold text-center text-diu-primary mb-12">Upcoming Events</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Event 1 -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden group">
+                        <div class="relative overflow-hidden h-48">
+                            <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Tech Talk" class="w-full h-full object-cover transition transform group-hover:scale-110">
+                            <div class="absolute top-4 right-4 bg-diu-secondary text-white text-xs font-bold px-3 py-1 rounded">UPCOMING</div>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-sm text-gray-500 mb-2"><i class="far fa-calendar-alt mr-2"></i>Dec 15, 2025</div>
+                            <h3 class="text-xl font-bold mb-2 group-hover:text-diu-primary transition">Future of AI in Bangladesh</h3>
+                            <p class="text-gray-600 mb-4">Join industry experts as they discuss the evolving landscape of Artificial Intelligence.</p>
+                            <button class="text-diu-primary font-bold hover:underline">Learn More <i class="fas fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                    <!-- Event 2 -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden group">
+                        <div class="relative overflow-hidden h-48">
+                            <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Workshop" class="w-full h-full object-cover transition transform group-hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <div class="text-sm text-gray-500 mb-2"><i class="far fa-calendar-alt mr-2"></i>Jan 10, 2026</div>
+                            <h3 class="text-xl font-bold mb-2 group-hover:text-diu-primary transition">Web Development Bootcamp</h3>
+                            <p class="text-gray-600 mb-4">A hands-on workshop to master the basics of HTML, CSS, and React.</p>
+                            <button class="text-diu-primary font-bold hover:underline">Learn More <i class="fas fa-arrow-right ml-1"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY SECTION -->
+        <section id="gallery-view" class="view-section hidden">
+            <div class="container mx-auto px-4 py-16">
+                <h2 class="text-3xl font-bold text-center text-diu-primary mb-12">Photo Gallery</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="cursor-pointer overflow-hidden rounded-lg shadow-md" onclick="openModal(this)">
+                        <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-48 object-cover hover:scale-110 transition duration-300">
+                    </div>
+                    <div class="cursor-pointer overflow-hidden rounded-lg shadow-md" onclick="openModal(this)">
+                        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-48 object-cover hover:scale-110 transition duration-300">
+                    </div>
+                    <div class="cursor-pointer overflow-hidden rounded-lg shadow-md" onclick="openModal(this)">
+                        <img src="https://images.unsplash.com/photo-1531545514256-b1400bc00f31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-48 object-cover hover:scale-110 transition duration-300">
+                    </div>
+                    <div class="cursor-pointer overflow-hidden rounded-lg shadow-md" onclick="openModal(this)">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-48 object-cover hover:scale-110 transition duration-300">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact-view" class="view-section hidden">
+            <div class="container mx-auto px-4 py-16">
+                <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
+                    <div class="flex flex-col md:flex-row">
+                        <div class="md:w-1/2 bg-diu-primary text-white p-8">
+                            <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
+                            <p class="mb-6 opacity-90">Have questions or want to join? Reach out to us!</p>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-map-marker-alt mt-1 mr-4"></i>
+                                    <span>Daffodil International University<br>Daffodil Smart City, Ashulia, Dhaka</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-envelope mr-4"></i>
+                                    <span>cisclub@diu.edu.bd</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-phone mr-4"></i>
+                                    <span>+880 1234 567890</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:w-1/2 p-8">
+                            <form>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                                    <input class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-diu-primary" type="text" placeholder="Your Name">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                                    <input class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-diu-primary" type="email" placeholder="Your Email">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Message</label>
+                                    <textarea class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-diu-primary" rows="4" placeholder="Your Message"></textarea>
+                                </div>
+                                <button class="w-full bg-diu-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOGGED IN VIEW (Hidden by default) -->
+        <section id="logged-in-view" class="hidden">
+            <div class="container mx-auto px-4 py-16 text-center">
+                <div class="bg-white p-10 rounded-xl shadow-lg inline-block">
+                    <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-4">Welcome Back!</h2>
+                    <p class="text-gray-600 mb-8">You have successfully logged in to the CIS Club portal.</p>
+                    <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-bold transition">Logout</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-diu-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-diu-secondary">CIS Club</h3>
+                    <p class="text-gray-400 text-sm">Empowering the next generation of tech leaders through innovation and collaboration.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-diu-secondary">Quick Links</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" onclick="navigateTo('home')" class="hover:text-white">Home</a></li>
+                        <li><a href="#" onclick="navigateTo('about')" class="hover:text-white">About</a></li>
+                        <li><a href="#" onclick="navigateTo('events')" class="hover:text-white">Events</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-diu-secondary">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-diu-secondary transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-diu-secondary transition"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-diu-secondary transition"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500 text-sm">
+                &copy; 2024 CIS Club, Daffodil International University. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+        <img id="modal-image" src="" class="max-w-full max-h-screen rounded-lg shadow-2xl">
+    </div>
+
+    <!-- Auth Modal (Email Only) -->
+    <div id="email-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-8 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h2 class="text-2xl font-bold mb-6 text-center text-diu-primary">Member Login</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">University Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input type="email" required class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:border-diu-primary" placeholder="student@diu.edu.bd">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" required class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:border-diu-primary" placeholder="********">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-diu-primary text-white font-bold py-3 rounded-lg hover:bg-green-700 transition shadow-md">
+                    Login
+                </button>
+            </form>
+            <div class="mt-4 text-center text-sm">
+                <a href="#" class="text-gray-500 hover:text-diu-primary">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast">Logged in successfully</div>
+
+    <!-- Scroll Top Button -->
+    <button id="scrollTopBtn" title="Go to top"><i class="fas fa-arrow-up"></i></button>
+
+    <script>
+        // --- NAVIGATION LOGIC ---
+        function navigateTo(viewId) {
+            // Special handling for auth modal
+            if(viewId === 'auth-modal') {
+                openAuthModal();
+                return;
+            }
+
+            // Hide all views
+            const views = document.querySelectorAll('.view-section');
+            views.forEach(view => view.classList.add('hidden'));
+            document.getElementById('logged-in-view').classList.add('hidden');
+
+            // Show selected view
+            const selectedView = document.getElementById(viewId + '-view');
+            if (selectedView) {
+                selectedView.classList.remove('hidden');
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+
+            // Update active state in nav (optional visual cue)
+            // Can be expanded to highlight current tab
+        }
+
+        // --- MOBILE MENU ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- AUTHENTICATION MOCKUP ---
+        function openAuthModal() {
+            document.getElementById('email-modal').classList.remove('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            // Simulate login
+            document.getElementById('email-modal').classList.add('hidden');
+            
+            // Show logged in state buttons
+            document.getElementById('auth-btn').classList.add('hidden');
+            document.getElementById('logout-btn').classList.remove('hidden');
+            document.getElementById('mobile-auth-btn').classList.add('hidden');
+            document.getElementById('mobile-logout-btn').classList.remove('hidden');
+
+            // Show success toast
+            showToast('Login Successful!');
+            
+            // Navigate to logged in view
+            document.getElementById('main-content').querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('logged-in-view').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            document.getElementById('auth-btn').classList.remove('hidden');
+            document.getElementById('logout-btn').classList.add('hidden');
+            document.getElementById('logged-in-view').classList.add('hidden');
+            document.getElementById('mobile-auth-btn').classList.remove('hidden');
+            document.getElementById('mobile-logout-btn').classList.add('hidden');
+            showToast('Logged out successfully');
+            navigateTo('home');
+        }
+
+        function closeModal() {
+            document.getElementById('email-modal').classList.add('hidden');
+        }
+
+        // --- TOAST NOTIFICATION ---
+        function showToast(msg) {
+            const x = document.getElementById("toast");
+            x.innerText = msg;
+            x.className = "show";
+            setTimeout(function() { 
+                x.className = x.className.replace("show", ""); 
+            }, 3000);
+        }
+
+        // --- SCROLL TOP BUTTON ---
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        window.onscroll = () => {
+            scrollBtn.style.display = (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) ? 'block' : 'none';
+        };
+        scrollBtn.onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+
+        // --- GALLERY MODAL ---
+        window.openModal = (el) => {
+            const imgSrc = el.querySelector('img').src;
+            const modalImg = document.getElementById('modal-image');
+            modalImg.src = imgSrc;
+            document.getElementById('gallery-modal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
