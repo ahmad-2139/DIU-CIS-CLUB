@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "diu-cis-club-21a",
     "public": "build",
     "ignore": [
       "firebase.json",
